@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0f172a"/>
+    <link rel="manifest" id="manifest">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/0f172a/e0e0e0?text=Train">
+
+    <title>App de Entrenamiento Refinada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+            background: linear-gradient(270deg, #0f172a, #1e293b, #0f172a);
+            background-size: 600% 600%;
+            animation: gradientBackground 20s ease infinite;
+        }
+        @keyframes gradientBackground { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .timer-display { font-weight: 900; font-feature-settings: 'tnum', 'lnum'; }
+        .glassmorphism { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .pulse-animation { animation: pulse 1s ease-in-out infinite; }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .pop-animation { animation: pop 0.3s ease-out; }
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+        .technique-content h3 { font-weight: bold; font-size: 1.1rem; margin-top: 1rem; margin-bottom: 0.5rem; color: #f59e0b; } /* amber-500 */
+        .technique-content ul { list-style-position: inside; padding-left: 0.5rem; }
+        .technique-content li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white antialiased">
+    <canvas id="confetti-canvas"></canvas>
+    <div id="app" class="container mx-auto p-4 max-w-2xl">
+
+        <header class="text-center mb-4">
+            <h1 class="text-3xl lg:text-4xl font-bold text-cyan-400">Plan de Acondicionamiento</h1>
+            <p class="text-slate-400">Tu guía para la máxima preparación física.</p>
+        </header>
+        
+        <div class="w-full bg-slate-700 rounded-full h-2.5 mb-6 shadow-inner">
+            <div id="progress-bar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
+        </div>
+
+        <nav class="flex justify-center bg-slate-800 rounded-lg p-2 mb-6 space-x-1 shadow-lg">
+            <button data-day="Día 1" class="day-selector flex-1 text-center py-2 px-3 rounded-md text-sm font-semibold transition-all duration-300 bg-cyan-500 text-slate-900">Día 1</button>
+            <button data-day="Día 2" class="day-selector flex-1 text-center py-2 px-3 rounded-md text-sm font-semibold transition-all duration-300 hover:bg-slate-700">Día 2</button>
+            <button data-day="Día 3" class="day-selector flex-1 text-center py-2 px-3 rounded-md text-sm font-semibold transition-all duration-300 hover:bg-slate-700">Día 3</button>
+            <button data-day="Día 5" class="day-selector flex-1 text-center py-2 px-3 rounded-md text-sm font-semibold transition-all duration-300 hover:bg-slate-700">Día 5</button>
+        </nav>
+
+        <main id="workout-area" class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 shadow-2xl text-center min-h-[400px] flex flex-col justify-between">
+            <div id="exercise-info" class="fade-in">
+                <p id="set-info" class="text-cyan-400 font-semibold mb-2">Serie 1 de 4</p>
+                <div class="flex items-center justify-center gap-2">
+                    <h2 id="exercise-name" class="text-4xl font-bold">Sentadillas</h2>
+                    <button id="technique-btn" title="Ver técnica y consejos">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-cyan-400 hover:text-cyan-300 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                </div>
+                <p id="exercise-detail" class="text-slate-300 text-lg mt-2">4 series de 20 repeticiones</p>
+                <p id="exercise-tempo" class="text-amber-400 font-mono mt-2"></p>
+            </div>
+
+            <div id="interactive-zone" class="my-8">
+                <div id="timer-display" class="timer-display text-8xl text-white hidden">00:00</div>
+                <div id="rep-display" class="text-8xl font-black text-white transition-colors duration-300">20</div>
+                 <div id="fail-input-zone" class="hidden flex-col items-center">
+                    <label for="fail-reps" class="mb-2 text-slate-400">¿Cuántas repeticiones hiciste?</label>
+                    <input type="number" id="fail-reps" class="bg-slate-700 text-white text-center text-4xl font-bold w-32 rounded-lg p-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                </div>
+            </div>
+
+            <div id="controls">
+                <button id="main-action-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-4 px-6 rounded-lg text-xl transition-all duration-300 transform active:scale-95 shadow-lg">
+                    ¡HECHO! (Iniciar Descanso)
+                </button>
+                 <button id="skip-btn" class="mt-4 text-slate-500 hover:text-slate-400 text-sm">Saltar ejercicio</button>
+            </div>
+        </main>
+        
+        <section class="mt-6">
+             <h3 class="text-xl font-semibold mb-3 text-center text-slate-400">Plan del Día: <span id="plan-day-title" class="text-white"></span></h3>
+             <ul id="exercise-list" class="space-y-2"></ul>
+        </section>
+
+    </div>
+
+    <div id="rest-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50">
+        <div class="glassmorphism rounded-2xl p-8 text-center shadow-2xl max-w-sm w-full mx-4 fade-in">
+            <p class="text-2xl font-semibold text-slate-300 mb-2">¡A DESCANSAR!</p>
+            <div id="rest-timer" class="timer-display text-8xl text-cyan-400 my-4">01:30</div>
+            <p id="motivation-quote" class="text-amber-400 font-semibold h-6 mb-4"></p>
+            <p class="text-lg text-slate-200">Siguiente: <span id="next-exercise-info" class="font-bold"></span></p>
+            <button id="skip-rest-btn" class="mt-6 w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 px-6 rounded-lg transition-transform transform active:scale-95">
+                Saltar Descanso
+            </button>
+        </div>
+    </div>
+
+    <div id="welcome-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="glassmorphism rounded-2xl p-8 text-center shadow-2xl max-w-sm w-full mx-4 fade-in">
+            <h2 class="text-2xl font-bold text-cyan-400 mb-4">¡Bienvenido!</h2>
+            <p class="text-slate-300 mb-6">Para una mejor experiencia, activa el sonido en tu dispositivo.</p>
+            <button id="start-app-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-3 px-6 rounded-lg transition-transform transform active:scale-95">
+                Comenzar
+            </button>
+        </div>
+    </div>
+
+    <div id="technique-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
+        <div class="glassmorphism rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 fade-in relative max-h-[90vh] flex flex-col">
+            <h2 id="technique-title" class="text-2xl font-bold text-cyan-400 mb-4 text-center">Técnica del Ejercicio</h2>
+            <button id="close-technique-btn" class="absolute top-3 right-4 text-slate-400 hover:text-white text-3xl">&times;</button>
+            <div class="overflow-y-auto pr-2 text-left text-slate-300 technique-content" id="technique-content">
+                <!-- El contenido se insertará aquí -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- PWA SETUP ---
+        const manifestData = {
+            "name": "App de Entrenamiento",
+            "short_name": "Entrenar",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#0f172a",
+            "theme_color": "#0f172a",
+            "description": "Tu guía personal para el acondicionamiento físico.",
+            "icons": [
+                { "src": "https://placehold.co/192x192/0f172a/e0e0e0?text=Train", "sizes": "192x192", "type": "image/png" },
+                { "src": "https://placehold.co/512x512/0f172a/e0e0e0?text=Train", "sizes": "512x512", "type": "image/png" }
+            ]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.querySelector('#manifest').setAttribute('href', manifestURL);
+
+        // Service Worker registration
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'workout-app-cache-v1';
+                const urlsToCache = [
+                    '.', // Cache the root path
+                    'index.html', // Explicitly cache index.html
+                ];
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => {
+                                console.log('Opened cache');
+                                // Using 'no-cache' to ensure we get the latest versions from the network upon install
+                                const cachePromises = urlsToCache.map(urlToCache => {
+                                    return cache.add(new Request(urlToCache, {cache: 'reload'}));
+                                });
+                                return Promise.all(cachePromises);
+                            })
+                    );
+                });
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => {
+                                // Cache hit - return response
+                                if (response) {
+                                    return response;
+                                }
+                                // Not in cache - fetch from network
+                                return fetch(event.request);
+                            })
+                    );
+                });
+            `;
+            const swBlob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(swBlob);
+            navigator.serviceWorker.register(swUrl)
+                .then(registration => console.log('ServiceWorker registration successful:', registration))
+                .catch(error => console.log('ServiceWorker registration failed:', error));
+        }
+
+        // --- DATA DE LA RUTINA ---
+        const workoutPlan = {
+            'Día 1': {
+                title: 'Fuerza de Empuje y Piernas',
+                exercises: [
+                    { name: 'Sentadillas (Squats)', type: 'reps', sets: 4, reps: 20, rest: 90, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y el pecho arriba.</li><li>Baja hasta que tus muslos estén paralelos al suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade una pausa de 3 segundos en la parte más baja.</li><li>Intenta hacer sentadillas con salto (Jump Squats).</li></ul>' },
+                    { name: 'Zancadas (Lunges)', type: 'reps', sets: 4, reps: '10 por pierna', rest: 90, tips: '<h3>Puntos Clave:</h3><ul><li>Da un paso largo y baja hasta que ambas rodillas formen 90°.</li><li>Evita que tu rodilla delantera sobrepase tu pie.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Sostén algo de peso en tus manos (botellas, mochila).</li><li>Haz zancadas caminando en lugar de en el sitio.</li></ul>' },
+                    { name: 'Planchas (Push-ups)', type: 'fail', sets: 5, reps: 'Al fallo', rest: 60, tempo: 'Tempo: 3s bajada, 1s pausa, 1s subida', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén tu cuerpo en una línea recta desde la cabeza a los talones.</li><li>Baja el pecho hasta casi tocar el suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Coloca los pies en una superficie elevada (silla, escalón).</li><li>Junta más las manos (Planchas diamante).</li></ul>' },
+                    { name: 'Empuje Isométrico', type: 'time', sets: 4, duration: 20, rest: 45, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén el abdomen apretado y la espalda recta.</li><li>Empuja con la máxima fuerza posible durante todo el tiempo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el tiempo de empuje de 20 a 30 segundos.</li><li>Intenta aplicar la fuerza de forma más explosiva.</li></ul>' }
+                ]
+            },
+            'Día 2': {
+                title: 'Fuerza de Tracción y Agarre',
+                exercises: [
+                    { name: 'Dominadas (Pull-ups)', type: 'fail', sets: 5, reps: 'Al fallo', rest: 90, tempo: 'Tempo: Bajada en 4-5s', tips: '<h3>Puntos Clave:</h3><ul><li>Inicia el movimiento retrayendo los omóplatos.</li><li>Sube hasta que tu barbilla sobrepase la barra.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade peso con una mochila.</li><li>Baja de forma extra lenta (fase negativa de 5 segundos).</li></ul>' },
+                    { name: 'Paseo del Granjero', type: 'time', sets: 5, duration: 45, rest: 60, detail: '45s de caminata con peso', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y los hombros hacia atrás.</li><li>Da pasos controlados, sin balancear el peso.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el peso que cargas.</li><li>Camina una distancia mayor o por más tiempo.</li></ul>' },
+                    { name: 'Aguante en Barra', type: 'fail-time', sets: 3, reps: 'Al fallo', rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén los hombros activos, no dejes que se hundan.</li><li>Aprieta el abdomen para evitar balancearte.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Intenta colgarte con una sola mano por unos segundos.</li><li>Levanta las rodillas hacia el pecho mientras cuelgas.</li></ul>' }
+                ]
+            },
+            'Día 3': {
+                title: 'Resistencia y Core',
+                exercises: [
+                    { name: 'Burpees', type: 'reps', sets: 4, reps: 10, rest: 120, detail: 'Circuito', tips: '<h3>Puntos Clave:</h3><ul><li>Realiza el movimiento de forma fluida y controlada.</li><li>El pecho debe tocar el suelo en la parte baja.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade una plancha extra al final de cada repetición.</li><li>Salta lo más alto que puedas, llevando las rodillas al pecho.</li></ul>' },
+                    { name: 'Plancha Abdominal', type: 'time', sets: 4, duration: 45, rest: 0, detail: 'Circuito', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén una línea recta de cabeza a talones.</li><li>Aprieta glúteos y abdomen para no arquear la espalda.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Levanta un brazo o una pierna del suelo.</li><li>Coloca tus antebrazos sobre una superficie inestable.</li></ul>' },
+                    { name: 'Sentadillas con Salto', type: 'reps', sets: 4, reps: 15, rest: 0, detail: 'Circuito', tips: '<h3>Puntos Clave:</h3><ul><li>Aterriza suavemente, absorbiendo el impacto con las rodillas.</li><li>Usa los brazos para impulsarte hacia arriba.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Salta con más explosividad y altura.</li><li>Intenta juntar las rodillas al pecho en el aire.</li></ul>' },
+                    { name: 'Escaladores', type: 'time', sets: 4, duration: 45, rest: 120, detail: 'Circuito', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la cadera baja y el core activado.</li><li>Alterna las rodillas de forma rítmica y controlada.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta la velocidad al máximo.</li><li>Usa discos deslizantes o un trapo bajo los pies.</li></ul>' }
+                ]
+            },
+            'Día 5': {
+                title: 'Poder (Cuerpo Completo)',
+                exercises: [
+                    { name: 'Sentadillas', type: 'reps', sets: 3, reps: 15, rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y el pecho arriba.</li><li>Baja hasta que tus muslos estén paralelos al suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade una pausa de 3 segundos en la parte más baja.</li><li>Intenta hacer sentadillas con salto (Jump Squats).</li></ul>' },
+                    { name: 'Dominadas', type: 'fail', sets: 3, reps: 'Al fallo', rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Inicia el movimiento retrayendo los omóplatos.</li><li>Sube hasta que tu barbilla sobrepase la barra.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade peso con una mochila.</li><li>Baja de forma extra lenta (fase negativa de 5 segundos).</li></ul>' },
+                    { name: 'Planchas', type: 'fail', sets: 3, reps: 'Al fallo', rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén tu cuerpo en una línea recta desde la cabeza a los talones.</li><li>Baja el pecho hasta casi tocar el suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Coloca los pies en una superficie elevada (silla, escalón).</li><li>Junta más las manos (Planchas diamante).</li></ul>' },
+                    { name: 'Paseo del Granjero', type: 'time', sets: 3, duration: 50, rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y los hombros hacia atrás.</li><li>Da pasos controlados, sin balancear el peso.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el peso que cargas.</li><li>Camina una distancia mayor o por más tiempo.</li></ul>' },
+                    { name: 'Empuje Isométrico', type: 'time', sets: 3, duration: 15, rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén el abdomen apretado y la espalda recta.</li><li>Empuja con la máxima fuerza posible durante todo el tiempo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el tiempo de empuje de 20 a 30 segundos.</li><li>Intenta aplicar la fuerza de forma más explosiva.</li></ul>' }
+                ]
+            }
+        };
+
+        const motivationQuotes = [ "¡Vamos, tú puedes!", "¡Una más!", "¡La fuerza está contigo!", "¡Sin dolor no hay gloria!", "¡Sigue así!", "¡Imparable!", "¡Con todo!" ];
+
+        // --- ESTADO DE LA APP ---
+        let currentState = { day: 'Día 1', exerciseIndex: 0, set: 1, timerInterval: null, soundsReady: false, isWorkoutComplete: false };
+
+        // --- ELEMENTOS DEL DOM ---
+        const dom = {
+            daySelectors: document.querySelectorAll('.day-selector'),
+            progressBar: document.getElementById('progress-bar'),
+            setInfo: document.getElementById('set-info'),
+            exerciseInfo: document.getElementById('exercise-info'),
+            exerciseName: document.getElementById('exercise-name'),
+            exerciseDetail: document.getElementById('exercise-detail'),
+            exerciseTempo: document.getElementById('exercise-tempo'),
+            timerDisplay: document.getElementById('timer-display'),
+            repDisplay: document.getElementById('rep-display'),
+            failInputZone: document.getElementById('fail-input-zone'),
+            failRepsInput: document.getElementById('fail-reps'),
+            mainActionBtn: document.getElementById('main-action-btn'),
+            skipBtn: document.getElementById('skip-btn'),
+            restModal: document.getElementById('rest-modal'),
+            restTimer: document.getElementById('rest-timer'),
+            nextExerciseInfo: document.getElementById('next-exercise-info'),
+            skipRestBtn: document.getElementById('skip-rest-btn'),
+            planDayTitle: document.getElementById('plan-day-title'),
+            exerciseList: document.getElementById('exercise-list'),
+            welcomeModal: document.getElementById('welcome-modal'),
+            startAppBtn: document.getElementById('start-app-btn'),
+            motivationQuote: document.getElementById('motivation-quote'),
+            techniqueBtn: document.getElementById('technique-btn'),
+            techniqueModal: document.getElementById('technique-modal'),
+            techniqueTitle: document.getElementById('technique-title'),
+            techniqueContent: document.getElementById('technique-content'),
+            closeTechniqueBtn: document.getElementById('close-technique-btn')
+        };
+        
+        // --- MOTOR DE SONIDO Y EFECTOS ---
+        let sounds = {};
+        function setupSounds() {
+            sounds.start = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.1 } }).toDestination();
+            sounds.complete = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.2 } }).toDestination();
+            sounds.finish = new Tone.MembraneSynth().toDestination();
+            sounds.countdownTick = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination();
+            currentState.soundsReady = true;
+        }
+        function playSound(sound) {
+            if (!currentState.soundsReady) return;
+            try {
+                const now = Tone.now();
+                if (sound === 'start') sounds.start.triggerAttackRelease('C5', '8n', now);
+                if (sound === 'complete') sounds.complete.triggerAttackRelease('G5', '8n', now);
+                if (sound === 'countdownTick') sounds.countdownTick.triggerAttackRelease('A5', '16n', now);
+                if (sound === 'finish') {
+                    sounds.finish.triggerAttackRelease("C2", "8n", now);
+                    sounds.finish.triggerAttackRelease("G2", "8n", now + 0.2);
+                    sounds.finish.triggerAttackRelease("C3", "8n", now + 0.4);
+                }
+            } catch (error) { console.error("Error al reproducir sonido:", error); }
+        }
+        function vibrate(pattern = 50) { if ('vibrate' in navigator) navigator.vibrate(pattern); }
+        function triggerConfetti() {
+            const myCanvas = document.getElementById('confetti-canvas');
+            const myConfetti = confetti.create(myCanvas, { resize: true, useWorker: true });
+            myConfetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
+        }
+
+        // --- LÓGICA DE LA APP ---
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+        function startTimer(duration, displayElement, onEnd) {
+            let timeLeft = duration;
+            displayElement.textContent = formatTime(timeLeft);
+            displayElement.classList.add('pulse-animation');
+            clearInterval(currentState.timerInterval);
+            currentState.timerInterval = setInterval(() => {
+                timeLeft--;
+                displayElement.textContent = formatTime(timeLeft);
+                if (timeLeft <= 3 && timeLeft > 0) {
+                    playSound('countdownTick');
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(currentState.timerInterval);
+                    displayElement.classList.remove('pulse-animation');
+                    playSound('finish');
+                    vibrate([100, 50, 100]);
+                    if (onEnd) onEnd();
+                }
+            }, 1000);
+        }
+        function updateProgressBar() {
+            const plan = workoutPlan[currentState.day];
+            const totalExercises = plan.exercises.length;
+            const progress = (currentState.exerciseIndex / totalExercises) * 100;
+            dom.progressBar.style.width = `${progress}%`;
+        }
+        function updateExerciseList() {
+            const plan = workoutPlan[currentState.day];
+            dom.planDayTitle.textContent = plan.title;
+            dom.exerciseList.innerHTML = '';
+            plan.exercises.forEach((ex, index) => {
+                const isCurrent = index === currentState.exerciseIndex;
+                const isDone = index < currentState.exerciseIndex;
+                const li = document.createElement('li');
+                li.className = `flex items-center p-3 rounded-lg transition-all duration-300 ${isCurrent ? 'bg-slate-700 scale-105 shadow-lg' : 'bg-slate-800'} ${isDone ? 'opacity-50' : ''}`;
+                li.innerHTML = `
+                    <div class="flex-shrink-0 w-6 h-6 rounded-full ${isCurrent ? 'bg-cyan-400 animate-pulse' : (isDone ? 'bg-green-500' : 'bg-slate-600')} flex items-center justify-center mr-4">
+                       ${isDone ? '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : ''}
+                    </div>
+                    <span class="font-semibold">${ex.name}</span>
+                    <span class="ml-auto text-sm text-slate-400">${ex.sets} x ${ex.reps || ex.duration + 's'}</span>
+                `;
+                dom.exerciseList.appendChild(li);
+            });
+        }
+        function loadExercise() {
+            dom.exerciseInfo.classList.remove('fade-in');
+            void dom.exerciseInfo.offsetWidth;
+            dom.exerciseInfo.classList.add('fade-in');
+            const plan = workoutPlan[currentState.day];
+            if (currentState.exerciseIndex >= plan.exercises.length) {
+                showCompletionScreen();
+                return;
+            }
+            const exercise = plan.exercises[currentState.exerciseIndex];
+            dom.setInfo.textContent = `Serie ${currentState.set} de ${exercise.sets}`;
+            dom.exerciseName.textContent = exercise.name;
+            let detailText = exercise.detail || `${exercise.sets} series de ${exercise.reps || exercise.duration + 's'}`;
+            if (plan.title.includes('Circuito')) { detailText = `Circuito - Ronda ${currentState.set}/${exercise.sets}`; }
+            dom.exerciseDetail.textContent = detailText;
+            dom.exerciseTempo.textContent = exercise.tempo || '';
+            dom.timerDisplay.classList.add('hidden');
+            dom.repDisplay.classList.add('hidden');
+            dom.failInputZone.classList.add('hidden');
+            dom.repDisplay.classList.remove('text-green-400');
+            switch (exercise.type) {
+                case 'time':
+                    dom.timerDisplay.classList.remove('hidden');
+                    dom.timerDisplay.textContent = formatTime(exercise.duration);
+                    dom.mainActionBtn.textContent = '¡COMENZAR!';
+                    break;
+                case 'fail-time':
+                    dom.timerDisplay.classList.remove('hidden');
+                    dom.timerDisplay.textContent = "00:00";
+                    dom.mainActionBtn.textContent = '¡COMENZAR CRONÓMETRO!';
+                    dom.exerciseDetail.textContent = `${exercise.sets} series al fallo`;
+                    break;
+                case 'fail':
+                    dom.failInputZone.classList.remove('hidden');
+                    dom.failRepsInput.value = '';
+                    dom.mainActionBtn.textContent = '¡HECHO! (Iniciar Descanso)';
+                    break;
+                case 'reps':
+                default:
+                    dom.repDisplay.classList.remove('hidden');
+                    dom.repDisplay.textContent = exercise.reps;
+                    dom.mainActionBtn.textContent = '¡HECHO! (Iniciar Descanso)';
+                    break;
+            }
+            updateProgressBar();
+            updateExerciseList();
+        }
+        function handleMainAction() {
+            vibrate();
+            dom.mainActionBtn.classList.add('pop-animation');
+            dom.mainActionBtn.addEventListener('animationend', () => dom.mainActionBtn.classList.remove('pop-animation'), { once: true });
+            const exercise = workoutPlan[currentState.day].exercises[currentState.exerciseIndex];
+            if (dom.mainActionBtn.textContent.includes('COMENZAR')) {
+                playSound('start');
+                if(exercise.type === 'fail-time') {
+                    let seconds = 0;
+                    clearInterval(currentState.timerInterval);
+                    currentState.timerInterval = setInterval(() => {
+                        seconds++;
+                        dom.timerDisplay.textContent = formatTime(seconds);
+                    }, 1000);
+                    dom.mainActionBtn.textContent = '¡PARAR Y DESCANSAR!';
+                } else {
+                    startTimer(exercise.duration, dom.timerDisplay, () => {
+                        startRest();
+                    });
+                    dom.mainActionBtn.textContent = 'EN PROGRESO...';
+                    dom.mainActionBtn.disabled = true;
+                }
+            } else {
+                playSound('complete');
+                dom.repDisplay.classList.add('text-green-400');
+                clearInterval(currentState.timerInterval);
+                setTimeout(startRest, 300);
+            }
+        }
+        function startRest() {
+            const plan = workoutPlan[currentState.day];
+            let currentExercise = plan.exercises[currentState.exerciseIndex];
+            let restDuration = currentExercise.rest;
+            if(plan.title.includes('Circuito') && currentExercise.rest === 0) {
+                nextSetOrExercise();
+                return;
+            }
+            if (currentState.set >= currentExercise.sets && currentState.exerciseIndex >= plan.exercises.length - 1) {
+                nextSetOrExercise();
+                return;
+            }
+            dom.restModal.classList.remove('hidden');
+            dom.motivationQuote.textContent = motivationQuotes[Math.floor(Math.random() * motivationQuotes.length)];
+            let nextSet = currentState.set + 1;
+            let nextExercise = currentExercise;
+            if (nextSet > currentExercise.sets) {
+                nextSet = 1;
+                const nextIndex = currentState.exerciseIndex + 1;
+                if(nextIndex < plan.exercises.length) {
+                   nextExercise = plan.exercises[nextIndex];
+                }
+            }
+            dom.nextExerciseInfo.textContent = `${nextExercise.name} (Serie ${nextSet})`;
+            startTimer(restDuration, dom.restTimer, () => {
+                dom.restModal.classList.add('hidden');
+                nextSetOrExercise();
+            });
+        }
+        function nextSetOrExercise() {
+            const plan = workoutPlan[currentState.day];
+            const currentExercise = plan.exercises[currentState.exerciseIndex];
+            currentState.set++;
+            if (currentState.set > currentExercise.sets) {
+                currentState.set = 1;
+                currentState.exerciseIndex++;
+            }
+            dom.mainActionBtn.disabled = false;
+            loadExercise();
+        }
+        function showCompletionScreen() {
+             currentState.isWorkoutComplete = true;
+             playSound('finish');
+             triggerConfetti();
+             vibrate([100, 50, 100]);
+             dom.progressBar.style.width = '100%';
+             dom.setInfo.textContent = "¡Felicidades!";
+             dom.exerciseName.textContent = "RUTINA COMPLETADA";
+             dom.exerciseDetail.textContent = `Has completado el ${currentState.day}. ¡Gran trabajo!`;
+             dom.exerciseTempo.textContent = "Recuerda descansar, nutrirte e hidratarte bien.";
+             dom.timerDisplay.classList.add('hidden');
+             dom.repDisplay.classList.add('hidden');
+             dom.failInputZone.classList.add('hidden');
+             dom.mainActionBtn.textContent = 'ENTRENAR OTRO DÍA';
+             dom.skipBtn.classList.add('hidden');
+        }
+        function changeDay(day) {
+            currentState.day = day;
+            currentState.exerciseIndex = 0;
+            currentState.set = 1;
+            currentState.isWorkoutComplete = false;
+            clearInterval(currentState.timerInterval);
+            dom.mainActionBtn.disabled = false;
+            dom.skipBtn.classList.remove('hidden');
+            dom.daySelectors.forEach(btn => {
+                if (btn.dataset.day === day) {
+                    btn.classList.add('bg-cyan-500', 'text-slate-900');
+                    btn.classList.remove('hover:bg-slate-700');
+                } else {
+                    btn.classList.remove('bg-cyan-500', 'text-slate-900');
+                    btn.classList.add('hover:bg-slate-700');
+                }
+            });
+            loadExercise();
+        }
+        function showTechniqueModal() {
+            const exercise = workoutPlan[currentState.day].exercises[currentState.exerciseIndex];
+            dom.techniqueTitle.textContent = exercise.name;
+            dom.techniqueContent.innerHTML = exercise.tips;
+            dom.techniqueModal.classList.remove('hidden');
+        }
+
+        // --- EVENT LISTENERS E INICIALIZACIÓN ---
+        function initializeApp() {
+            dom.startAppBtn.addEventListener('click', () => {
+                vibrate();
+                if (Tone.context.state !== 'running') {
+                    Tone.start().then(setupSounds);
+                }
+                dom.welcomeModal.classList.add('hidden');
+            });
+            dom.mainActionBtn.addEventListener('click', () => {
+                if (currentState.isWorkoutComplete) {
+                    location.reload();
+                } else {
+                    handleMainAction();
+                }
+            });
+            dom.skipBtn.addEventListener('click', () => {
+                vibrate();
+                playSound('complete');
+                currentState.set = 1;
+                currentState.exerciseIndex++;
+                loadExercise();
+            });
+            dom.skipRestBtn.addEventListener('click', () => {
+                vibrate();
+                playSound('start');
+                clearInterval(currentState.timerInterval);
+                dom.restModal.classList.add('hidden');
+                dom.restTimer.classList.remove('pulse-animation');
+                nextSetOrExercise();
+            });
+            dom.daySelectors.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    vibrate();
+                    changeDay(btn.dataset.day)
+                });
+            });
+            dom.techniqueBtn.addEventListener('click', showTechniqueModal);
+            dom.closeTechniqueBtn.addEventListener('click', () => dom.techniqueModal.classList.add('hidden'));
+            
+            changeDay('Día 1');
+        }
+        
+        initializeApp();
+    });
+    </script>
+</body>
+</html>
