@@ -148,13 +148,12 @@
         const manifestURL = URL.createObjectURL(manifestBlob);
         document.querySelector('#manifest').setAttribute('href', manifestURL);
 
-        // Service Worker registration
         if ('serviceWorker' in navigator) {
             const swCode = `
                 const CACHE_NAME = 'workout-app-cache-v1';
                 const urlsToCache = [
-                    '.', // Cache the root path
-                    'index.html', // Explicitly cache index.html
+                    '.',
+                    'index.html',
                     'icon-192.png',
                     'icon-512.png'
                 ];
@@ -162,7 +161,6 @@
                     event.waitUntil(
                         caches.open(CACHE_NAME)
                             .then(cache => {
-                                console.log('Opened cache');
                                 const cachePromises = urlsToCache.map(urlToCache => {
                                     return cache.add(new Request(urlToCache, {cache: 'reload'}));
                                 });
@@ -191,6 +189,7 @@
         const workoutPlan = {
             'Día 1': {
                 title: 'Fuerza de Empuje y Piernas',
+                isCircuit: false,
                 exercises: [
                     { name: 'Sentadillas (Squats)', type: 'reps', sets: 4, reps: 20, rest: 90, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y el pecho arriba.</li><li>Baja hasta que tus muslos estén paralelos al suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade una pausa de 3 segundos en la parte más baja.</li><li>Intenta hacer sentadillas con salto (Jump Squats).</li></ul>' },
                     { name: 'Zancadas (Lunges)', type: 'reps', sets: 4, reps: '10 por pierna', rest: 90, tips: '<h3>Puntos Clave:</h3><ul><li>Da un paso largo y baja hasta que ambas rodillas formen 90°.</li><li>Evita que tu rodilla delantera sobrepase tu pie.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Sostén algo de peso en tus manos (botellas, mochila).</li><li>Haz zancadas caminando en lugar de en el sitio.</li></ul>' },
@@ -200,6 +199,7 @@
             },
             'Día 2': {
                 title: 'Fuerza de Tracción y Agarre',
+                isCircuit: false,
                 exercises: [
                     { name: 'Dominadas (Pull-ups)', type: 'fail', sets: 5, reps: 'Al fallo', rest: 90, tempo: 'Tempo: Bajada en 4-5s', tips: '<h3>Puntos Clave:</h3><ul><li>Inicia el movimiento retrayendo los omóplatos.</li><li>Sube hasta que tu barbilla sobrepase la barra.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade peso con una mochila.</li><li>Baja de forma extra lenta (fase negativa de 5 segundos).</li></ul>' },
                     { name: 'Paseo del Granjero', type: 'time', sets: 5, duration: 45, rest: 60, detail: '45s de caminata con peso', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y los hombros hacia atrás.</li><li>Da pasos controlados, sin balancear el peso.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el peso que cargas.</li><li>Camina una distancia mayor o por más tiempo.</li></ul>' },
@@ -208,15 +208,19 @@
             },
             'Día 3': {
                 title: 'Resistencia y Core',
+                isCircuit: true,
+                rounds: 4,
+                restBetweenRounds: 120,
                 exercises: [
-                    { name: 'Burpees', type: 'reps', sets: 4, reps: 10, rest: 120, detail: 'Circuito', tips: '<h3>Puntos Clave:</h3><ul><li>Realiza el movimiento de forma fluida y controlada.</li><li>El pecho debe tocar el suelo en la parte baja.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade una plancha extra al final de cada repetición.</li><li>Salta lo más alto que puedas, llevando las rodillas al pecho.</li></ul>' },
-                    { name: 'Plancha Abdominal', type: 'time', sets: 4, duration: 45, rest: 0, detail: 'Circuito', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén una línea recta de cabeza a talones.</li><li>Aprieta glúteos y abdomen para no arquear la espalda.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Levanta un brazo o una pierna del suelo.</li><li>Coloca tus antebrazos sobre una superficie inestable.</li></ul>' },
-                    { name: 'Sentadillas con Salto', type: 'reps', sets: 4, reps: 15, rest: 0, detail: 'Circuito', tips: '<h3>Puntos Clave:</h3><ul><li>Aterriza suavemente, absorbiendo el impacto con las rodillas.</li><li>Usa los brazos para impulsarte hacia arriba.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Salta con más explosividad y altura.</li><li>Intenta juntar las rodillas al pecho en el aire.</li></ul>' },
-                    { name: 'Escaladores', type: 'time', sets: 4, duration: 45, rest: 120, detail: 'Circuito', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la cadera baja y el core activado.</li><li>Alterna las rodillas de forma rítmica y controlada.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta la velocidad al máximo.</li><li>Usa discos deslizantes o un trapo bajo los pies.</li></ul>' }
+                    { name: 'Burpees', type: 'reps', reps: 10, tips: '<h3>Puntos Clave:</h3><ul><li>Realiza el movimiento de forma fluida y controlada.</li><li>El pecho debe tocar el suelo en la parte baja.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade una plancha extra al final de cada repetición.</li><li>Salta lo más alto que puedas, llevando las rodillas al pecho.</li></ul>' },
+                    { name: 'Plancha Abdominal', type: 'time', duration: 45, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén una línea recta de cabeza a talones.</li><li>Aprieta glúteos y abdomen para no arquear la espalda.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Levanta un brazo o una pierna del suelo.</li><li>Coloca tus antebrazos sobre una superficie inestable.</li></ul>' },
+                    { name: 'Sentadillas con Salto', type: 'reps', reps: 15, tips: '<h3>Puntos Clave:</h3><ul><li>Aterriza suavemente, absorbiendo el impacto con las rodillas.</li><li>Usa los brazos para impulsarte hacia arriba.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Salta con más explosividad y altura.</li><li>Intenta juntar las rodillas al pecho en el aire.</li></ul>' },
+                    { name: 'Escaladores', type: 'time', duration: 45, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la cadera baja y el core activado.</li><li>Alterna las rodillas de forma rítmica y controlada.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta la velocidad al máximo.</li><li>Usa discos deslizantes o un trapo bajo los pies.</li></ul>' }
                 ]
             },
             'Día 5': {
                 title: 'Poder (Cuerpo Completo)',
+                isCircuit: false,
                 exercises: [
                     { name: 'Sentadillas', type: 'reps', sets: 3, reps: 15, rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y el pecho arriba.</li><li>Baja hasta que tus muslos estén paralelos al suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade una pausa de 3 segundos en la parte más baja.</li><li>Intenta hacer sentadillas con salto (Jump Squats).</li></ul>' },
                     { name: 'Dominadas', type: 'fail', sets: 3, reps: 'Al fallo', rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Inicia el movimiento retrayendo los omóplatos.</li><li>Sube hasta que tu barbilla sobrepase la barra.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade peso con una mochila.</li><li>Baja de forma extra lenta (fase negativa de 5 segundos).</li></ul>' },
@@ -321,8 +325,15 @@
         }
         function updateProgressBar() {
             const plan = workoutPlan[currentState.day];
-            const totalExercises = plan.exercises.length;
-            const progress = (currentState.exerciseIndex / totalExercises) * 100;
+            let progress = 0;
+            if (plan.isCircuit) {
+                const totalSteps = plan.rounds * plan.exercises.length;
+                const completedSteps = (currentState.set - 1) * plan.exercises.length + currentState.exerciseIndex;
+                progress = (completedSteps / totalSteps) * 100;
+            } else {
+                const totalExercises = plan.exercises.length;
+                progress = (currentState.exerciseIndex / totalExercises) * 100;
+            }
             dom.progressBar.style.width = `${progress}%`;
         }
         function updateExerciseList() {
@@ -331,15 +342,23 @@
             dom.exerciseList.innerHTML = '';
             plan.exercises.forEach((ex, index) => {
                 const isCurrent = index === currentState.exerciseIndex;
-                const isDone = index < currentState.exerciseIndex;
+                let isDone = false;
+                if(plan.isCircuit) {
+                    // In a circuit, an exercise is "done" if we are in a later round.
+                    isDone = (currentState.set > 1);
+                } else {
+                    isDone = index < currentState.exerciseIndex;
+                }
+                
                 const li = document.createElement('li');
                 li.className = `flex items-center p-3 rounded-lg transition-all duration-300 ${isCurrent ? 'bg-slate-700 scale-105 shadow-lg' : 'bg-slate-800'} ${isDone ? 'opacity-50' : ''}`;
+                const repsOrDuration = plan.isCircuit ? (ex.reps ? `${ex.reps} reps` : `${ex.duration}s`) : `${ex.sets} x ${ex.reps || ex.duration + 's'}`;
                 li.innerHTML = `
                     <div class="flex-shrink-0 w-6 h-6 rounded-full ${isCurrent ? 'bg-cyan-400 animate-pulse' : (isDone ? 'bg-green-500' : 'bg-slate-600')} flex items-center justify-center mr-4">
                        ${isDone ? '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : ''}
                     </div>
                     <span class="font-semibold">${ex.name}</span>
-                    <span class="ml-auto text-sm text-slate-400">${ex.sets} x ${ex.reps || ex.duration + 's'}</span>
+                    <span class="ml-auto text-sm text-slate-400">${repsOrDuration}</span>
                 `;
                 dom.exerciseList.appendChild(li);
             });
@@ -349,15 +368,14 @@
             void dom.exerciseInfo.offsetWidth;
             dom.exerciseInfo.classList.add('fade-in');
             const plan = workoutPlan[currentState.day];
-            if (currentState.exerciseIndex >= plan.exercises.length) {
+            if ((plan.isCircuit && currentState.set > plan.rounds) || (!plan.isCircuit && currentState.exerciseIndex >= plan.exercises.length)) {
                 showCompletionScreen();
                 return;
             }
             const exercise = plan.exercises[currentState.exerciseIndex];
-            dom.setInfo.textContent = `Serie ${currentState.set} de ${exercise.sets}`;
+            dom.setInfo.textContent = plan.isCircuit ? `Ronda ${currentState.set} de ${plan.rounds}` : `Serie ${currentState.set} de ${exercise.sets}`;
             dom.exerciseName.textContent = exercise.name;
-            let detailText = exercise.detail || `${exercise.sets} series de ${exercise.reps || exercise.duration + 's'}`;
-            if (plan.title.includes('Circuito')) { detailText = `Circuito - Ronda ${currentState.set}/${exercise.sets}`; }
+            let detailText = plan.isCircuit ? (exercise.reps ? `${exercise.reps} reps` : `${exercise.duration}s`) : (exercise.detail || `${exercise.sets} series de ${exercise.reps || exercise.duration + 's'}`);
             dom.exerciseDetail.textContent = detailText;
             dom.exerciseTempo.textContent = exercise.tempo || '';
             dom.timerDisplay.classList.add('hidden');
@@ -374,7 +392,7 @@
                     dom.timerDisplay.classList.remove('hidden');
                     dom.timerDisplay.textContent = "00:00";
                     dom.mainActionBtn.textContent = '¡COMENZAR CRONÓMETRO!';
-                    dom.exerciseDetail.textContent = `${exercise.sets} series al fallo`;
+                    dom.exerciseDetail.textContent = plan.isCircuit ? `Al fallo` : `${exercise.sets} series al fallo`;
                     break;
                 case 'fail':
                     dom.failInputZone.classList.remove('hidden');
@@ -422,28 +440,44 @@
         }
         function startRest() {
             const plan = workoutPlan[currentState.day];
-            let currentExercise = plan.exercises[currentState.exerciseIndex];
-            let restDuration = currentExercise.rest;
-            if(plan.title.includes('Circuito') && currentExercise.rest === 0) {
-                nextSetOrExercise();
-                return;
-            }
-            if (currentState.set >= currentExercise.sets && currentState.exerciseIndex >= plan.exercises.length - 1) {
-                nextSetOrExercise();
-                return;
-            }
-            dom.restModal.classList.remove('hidden');
-            dom.motivationQuote.textContent = motivationQuotes[Math.floor(Math.random() * motivationQuotes.length)];
-            let nextSet = currentState.set + 1;
-            let nextExercise = currentExercise;
-            if (nextSet > currentExercise.sets) {
-                nextSet = 1;
-                const nextIndex = currentState.exerciseIndex + 1;
-                if(nextIndex < plan.exercises.length) {
-                   nextExercise = plan.exercises[nextIndex];
+            let restDuration;
+            let isLastExerciseInRound = currentState.exerciseIndex === plan.exercises.length - 1;
+
+            if (plan.isCircuit) {
+                restDuration = isLastExerciseInRound ? plan.restBetweenRounds : 0;
+            } else {
+                let currentExercise = plan.exercises[currentState.exerciseIndex];
+                restDuration = currentExercise.rest;
+                if (currentState.set >= currentExercise.sets && currentState.exerciseIndex >= plan.exercises.length - 1) {
+                    nextSetOrExercise(); return;
                 }
             }
-            dom.nextExerciseInfo.textContent = `${nextExercise.name} (Serie ${nextSet})`;
+
+            if (restDuration === 0) {
+                nextSetOrExercise(); return;
+            }
+            
+            dom.restModal.classList.remove('hidden');
+            dom.motivationQuote.textContent = motivationQuotes[Math.floor(Math.random() * motivationQuotes.length)];
+            
+            let nextExerciseName;
+            let nextSetOrRound;
+
+            if(plan.isCircuit) {
+                nextExerciseName = plan.exercises[0].name;
+                nextSetOrRound = `Ronda ${currentState.set + 1}`;
+            } else {
+                let nextSet = currentState.set + 1;
+                let nextExercise = plan.exercises[currentState.exerciseIndex];
+                if (nextSet > nextExercise.sets) {
+                    nextSet = 1;
+                    nextExercise = plan.exercises[currentState.exerciseIndex + 1];
+                }
+                nextExerciseName = nextExercise.name;
+                nextSetOrRound = `Serie ${nextSet}`;
+            }
+            
+            dom.nextExerciseInfo.textContent = `${nextExerciseName} (${nextSetOrRound})`;
             startTimer(restDuration, dom.restTimer, () => {
                 dom.restModal.classList.add('hidden');
                 nextSetOrExercise();
@@ -451,11 +485,19 @@
         }
         function nextSetOrExercise() {
             const plan = workoutPlan[currentState.day];
-            const currentExercise = plan.exercises[currentState.exerciseIndex];
-            currentState.set++;
-            if (currentState.set > currentExercise.sets) {
-                currentState.set = 1;
+            if (plan.isCircuit) {
                 currentState.exerciseIndex++;
+                if (currentState.exerciseIndex >= plan.exercises.length) {
+                    currentState.exerciseIndex = 0;
+                    currentState.set++;
+                }
+            } else {
+                const currentExercise = plan.exercises[currentState.exerciseIndex];
+                currentState.set++;
+                if (currentState.set > currentExercise.sets) {
+                    currentState.set = 1;
+                    currentState.exerciseIndex++;
+                }
             }
             dom.mainActionBtn.disabled = false;
             loadExercise();
@@ -521,8 +563,17 @@
             dom.skipBtn.addEventListener('click', () => {
                 vibrate();
                 playSound('complete');
-                currentState.set = 1;
-                currentState.exerciseIndex++;
+                const plan = workoutPlan[currentState.day];
+                if (plan.isCircuit) {
+                    currentState.exerciseIndex++;
+                    if (currentState.exerciseIndex >= plan.exercises.length) {
+                        currentState.exerciseIndex = 0;
+                        currentState.set++;
+                    }
+                } else {
+                    currentState.set = 1;
+                    currentState.exerciseIndex++;
+                }
                 loadExercise();
             });
             dom.skipRestBtn.addEventListener('click', () => {
@@ -542,7 +593,7 @@
             dom.techniqueBtn.addEventListener('click', showTechniqueModal);
             dom.closeTechniqueBtn.addEventListener('click', () => dom.techniqueModal.classList.add('hidden'));
             
-            changeDay('Día 1');
+            loadExercise();
         }
         
         initializeApp();
