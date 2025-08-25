@@ -151,38 +151,26 @@
         if ('serviceWorker' in navigator) {
             const swCode = `
                 const CACHE_NAME = 'workout-app-cache-v1';
-                const urlsToCache = [
-                    '.',
-                    'index.html',
-                    'icon-192.png',
-                    'icon-512.png'
-                ];
+                const urlsToCache = [ '.', 'index.html', 'icon-192.png', 'icon-512.png' ];
                 self.addEventListener('install', event => {
                     event.waitUntil(
-                        caches.open(CACHE_NAME)
-                            .then(cache => {
-                                const cachePromises = urlsToCache.map(urlToCache => {
-                                    return cache.add(new Request(urlToCache, {cache: 'reload'}));
-                                });
-                                return Promise.all(cachePromises);
-                            })
+                        caches.open(CACHE_NAME).then(cache => {
+                            const cachePromises = urlsToCache.map(url => cache.add(new Request(url, {cache: 'reload'})));
+                            return Promise.all(cachePromises);
+                        })
                     );
                 });
                 self.addEventListener('fetch', event => {
                     event.respondWith(
-                        caches.match(event.request)
-                            .then(response => {
-                                if (response) { return response; }
-                                return fetch(event.request);
-                            })
+                        caches.match(event.request).then(response => response || fetch(event.request))
                     );
                 });
             `;
             const swBlob = new Blob([swCode], { type: 'application/javascript' });
             const swUrl = URL.createObjectURL(swBlob);
             navigator.serviceWorker.register(swUrl)
-                .then(registration => console.log('ServiceWorker registration successful:', registration))
-                .catch(error => console.log('ServiceWorker registration failed:', error));
+                .then(reg => console.log('ServiceWorker registered:', reg))
+                .catch(err => console.log('ServiceWorker registration failed:', err));
         }
 
         // --- DATA DE LA RUTINA ---
@@ -191,8 +179,20 @@
                 title: 'Fuerza de Empuje y Piernas',
                 isCircuit: false,
                 exercises: [
-                    { name: 'Sentadillas (Squats)', type: 'reps', sets: 4, reps: 20, rest: 90, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y el pecho arriba.</li><li>Baja hasta que tus muslos estén paralelos al suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade una pausa de 3 segundos en la parte más baja.</li><li>Intenta hacer sentadillas con salto (Jump Squats).</li></ul>' },
-                    { name: 'Zancadas (Lunges)', type: 'reps', sets: 4, reps: '10 por pierna', rest: 90, tips: '<h3>Puntos Clave:</h3><ul><li>Da un paso largo y baja hasta que ambas rodillas formen 90°.</li><li>Evita que tu rodilla delantera sobrepase tu pie.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Sostén algo de peso en tus manos (botellas, mochila).</li><li>Haz zancadas caminando en lugar de en el sitio.</li></ul>' },
+                    // MODIFICACIÓN: Ejercicio combinado en una superserie con 3 etapas
+                    { 
+                        name: 'Superserie: Sentadillas + Zancadas', 
+                        type: 'reps', 
+                        sets: 4, 
+                        rest: 90, 
+                        isSuperset: true,
+                        stages: [
+                            { name: 'Sentadillas', type: 'reps', reps: 20 },
+                            { name: 'Zancadas (Izquierda)', type: 'reps', reps: 10 },
+                            { name: 'Zancadas (Derecha)', type: 'reps', reps: 10 }
+                        ],
+                        tips: '<h3>Puntos Clave Sentadillas:</h3><ul><li>Mantén la espalda recta y el pecho arriba.</li><li>Baja hasta que tus muslos estén paralelos al suelo.</li></ul><h3>Puntos Clave Zancadas:</h3><ul><li>Da un paso largo y baja hasta que ambas rodillas formen 90°.</li><li>Evita que tu rodilla delantera sobrepase tu pie.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Realiza los movimientos de forma controlada pero sin pausa entre ellos.</li></ul>' 
+                    },
                     { name: 'Planchas (Push-ups)', type: 'fail', sets: 5, reps: 'Al fallo', rest: 60, tempo: 'Tempo: 3s bajada, 1s pausa, 1s subida', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén tu cuerpo en una línea recta desde la cabeza a los talones.</li><li>Baja el pecho hasta casi tocar el suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Coloca los pies en una superficie elevada (silla, escalón).</li><li>Junta más las manos (Planchas diamante).</li></ul>' },
                     { name: 'Empuje Isométrico', type: 'time', sets: 4, duration: 20, rest: 45, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén el abdomen apretado y la espalda recta.</li><li>Empuja con la máxima fuerza posible durante todo el tiempo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el tiempo de empuje de 20 a 30 segundos.</li><li>Intenta aplicar la fuerza de forma más explosiva.</li></ul>' }
                 ]
@@ -202,7 +202,7 @@
                 isCircuit: false,
                 exercises: [
                     { name: 'Dominadas (Pull-ups)', type: 'fail', sets: 5, reps: 'Al fallo', rest: 90, tempo: 'Tempo: Bajada en 4-5s', tips: '<h3>Puntos Clave:</h3><ul><li>Inicia el movimiento retrayendo los omóplatos.</li><li>Sube hasta que tu barbilla sobrepase la barra.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade peso con una mochila.</li><li>Baja de forma extra lenta (fase negativa de 5 segundos).</li></ul>' },
-                    { name: 'Paseo del Granjero', type: 'time', sets: 5, duration: 45, rest: 60, detail: '45s de caminata con peso', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y los hombros hacia atrás.</li><li>Da pasos controlados, sin balancear el peso.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el peso que cargas.</li><li>Camina una distancia mayor o por más tiempo.</li></ul>' },
+                    { name: 'Acarreo de Maleta', type: 'time', sets: 5, duration: 45, rest: 60, bilateral: true, detail: '45s por cada mano', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y los hombros nivelados.</li><li>Aprieta el abdomen para no inclinarte hacia el lado del peso.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el peso que cargas.</li><li>Camina una distancia mayor o por más tiempo.</li></ul>' },
                     { name: 'Aguante en Barra', type: 'fail-time', sets: 3, reps: 'Al fallo', rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén los hombros activos, no dejes que se hundan.</li><li>Aprieta el abdomen para evitar balancearte.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Intenta colgarte con una sola mano por unos segundos.</li><li>Levanta las rodillas hacia el pecho mientras cuelgas.</li></ul>' }
                 ]
             },
@@ -225,7 +225,7 @@
                     { name: 'Sentadillas', type: 'reps', sets: 3, reps: 15, rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y el pecho arriba.</li><li>Baja hasta que tus muslos estén paralelos al suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade una pausa de 3 segundos en la parte más baja.</li><li>Intenta hacer sentadillas con salto (Jump Squats).</li></ul>' },
                     { name: 'Dominadas', type: 'fail', sets: 3, reps: 'Al fallo', rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Inicia el movimiento retrayendo los omóplatos.</li><li>Sube hasta que tu barbilla sobrepase la barra.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade peso con una mochila.</li><li>Baja de forma extra lenta (fase negativa de 5 segundos).</li></ul>' },
                     { name: 'Planchas', type: 'fail', sets: 3, reps: 'Al fallo', rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén tu cuerpo en una línea recta desde la cabeza a los talones.</li><li>Baja el pecho hasta casi tocar el suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Coloca los pies en una superficie elevada (silla, escalón).</li><li>Junta más las manos (Planchas diamante).</li></ul>' },
-                    { name: 'Paseo del Granjero', type: 'time', sets: 3, duration: 50, rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y los hombros hacia atrás.</li><li>Da pasos controlados, sin balancear el peso.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el peso que cargas.</li><li>Camina una distancia mayor o por más tiempo.</li></ul>' },
+                    { name: 'Acarreo de Maleta', type: 'time', sets: 3, duration: 50, rest: 60, bilateral: true, detail: '50s por cada mano', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y los hombros nivelados.</li><li>Aprieta el abdomen para no inclinarte hacia el lado del peso.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el peso que cargas.</li><li>Camina una distancia mayor o por más tiempo.</li></ul>' },
                     { name: 'Empuje Isométrico', type: 'time', sets: 3, duration: 15, rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén el abdomen apretado y la espalda recta.</li><li>Empuja con la máxima fuerza posible durante todo el tiempo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el tiempo de empuje de 20 a 30 segundos.</li><li>Intenta aplicar la fuerza de forma más explosiva.</li></ul>' }
                 ]
             }
@@ -234,7 +234,8 @@
         const motivationQuotes = [ "¡Vamos, tú puedes!", "¡Una más!", "¡La fuerza está contigo!", "¡Sin dolor no hay gloria!", "¡Sigue así!", "¡Imparable!", "¡Con todo!" ];
 
         // --- ESTADO DE LA APP ---
-        let currentState = { day: 'Día 1', exerciseIndex: 0, set: 1, timerInterval: null, soundsReady: false, isWorkoutComplete: false };
+        // MODIFICACIÓN: Se añade stageIndex para controlar las etapas de la superserie
+        let currentState = { day: 'Día 1', exerciseIndex: 0, set: 1, timerInterval: null, soundsReady: false, isWorkoutComplete: false, currentSide: 'left', stageIndex: 0 };
 
         // --- ELEMENTOS DEL DOM ---
         const dom = {
@@ -344,7 +345,6 @@
                 const isCurrent = index === currentState.exerciseIndex;
                 let isDone = false;
                 if(plan.isCircuit) {
-                    // In a circuit, an exercise is "done" if we are in a later round.
                     isDone = (currentState.set > 1);
                 } else {
                     isDone = index < currentState.exerciseIndex;
@@ -373,19 +373,35 @@
                 return;
             }
             const exercise = plan.exercises[currentState.exerciseIndex];
-            dom.setInfo.textContent = plan.isCircuit ? `Ronda ${currentState.set} de ${plan.rounds}` : `Serie ${currentState.set} de ${exercise.sets}`;
-            dom.exerciseName.textContent = exercise.name;
-            let detailText = plan.isCircuit ? (exercise.reps ? `${exercise.reps} reps` : `${exercise.duration}s`) : (exercise.detail || `${exercise.sets} series de ${exercise.reps || exercise.duration + 's'}`);
-            dom.exerciseDetail.textContent = detailText;
+            
+            // MODIFICACIÓN: Lógica para manejar superseries, ejercicios bilaterales y normales
+            let currentPart = exercise; // Por defecto, la parte actual es el ejercicio completo
+            
+            if (exercise.isSuperset) {
+                currentPart = exercise.stages[currentState.stageIndex];
+                dom.setInfo.textContent = `${exercise.name} | Serie ${currentState.set} de ${exercise.sets}`;
+                dom.exerciseName.textContent = currentPart.name;
+                dom.exerciseDetail.textContent = `${currentPart.reps} repeticiones`;
+            } else {
+                dom.setInfo.textContent = plan.isCircuit ? `Ronda ${currentState.set} de ${plan.rounds}` : `Serie ${currentState.set} de ${exercise.sets}`;
+                let exerciseName = exercise.name;
+                if (exercise.bilateral) {
+                    exerciseName += ` (${currentState.currentSide === 'left' ? 'Lado Izquierdo' : 'Lado Derecho'})`;
+                }
+                dom.exerciseName.textContent = exerciseName;
+                dom.exerciseDetail.textContent = plan.isCircuit ? (exercise.reps ? `${exercise.reps} reps` : `${exercise.duration}s`) : (exercise.detail || `${exercise.sets} series de ${exercise.reps || exercise.duration + 's'}`);
+            }
+
             dom.exerciseTempo.textContent = exercise.tempo || '';
             dom.timerDisplay.classList.add('hidden');
             dom.repDisplay.classList.add('hidden');
             dom.failInputZone.classList.add('hidden');
             dom.repDisplay.classList.remove('text-green-400');
-            switch (exercise.type) {
+
+            switch (currentPart.type) {
                 case 'time':
                     dom.timerDisplay.classList.remove('hidden');
-                    dom.timerDisplay.textContent = formatTime(exercise.duration);
+                    dom.timerDisplay.textContent = formatTime(currentPart.duration);
                     dom.mainActionBtn.textContent = '¡COMENZAR!';
                     break;
                 case 'fail-time':
@@ -402,8 +418,13 @@
                 case 'reps':
                 default:
                     dom.repDisplay.classList.remove('hidden');
-                    dom.repDisplay.textContent = exercise.reps;
-                    dom.mainActionBtn.textContent = '¡HECHO! (Iniciar Descanso)';
+                    dom.repDisplay.textContent = currentPart.reps;
+                    dom.mainActionBtn.textContent = '¡HECHO!';
+                    if(exercise.isSuperset && currentState.stageIndex < exercise.stages.length - 1) {
+                        dom.mainActionBtn.textContent = 'SIGUIENTE ETAPA';
+                    } else {
+                        dom.mainActionBtn.textContent = '¡HECHO! (Iniciar Descanso)';
+                    }
                     break;
             }
             updateProgressBar();
@@ -426,7 +447,14 @@
                     dom.mainActionBtn.textContent = '¡PARAR Y DESCANSAR!';
                 } else {
                     startTimer(exercise.duration, dom.timerDisplay, () => {
-                        startRest();
+                        if (exercise.bilateral && currentState.currentSide === 'left') {
+                            currentState.currentSide = 'right';
+                            dom.mainActionBtn.disabled = false;
+                            dom.mainActionBtn.textContent = '¡COMENZAR LADO DERECHO!';
+                            loadExercise();
+                        } else {
+                            startRest();
+                        }
                     });
                     dom.mainActionBtn.textContent = 'EN PROGRESO...';
                     dom.mainActionBtn.disabled = true;
@@ -435,18 +463,28 @@
                 playSound('complete');
                 dom.repDisplay.classList.add('text-green-400');
                 clearInterval(currentState.timerInterval);
-                setTimeout(startRest, 300);
+                
+                // MODIFICACIÓN: Lógica para avanzar en superseries
+                if (exercise.isSuperset && currentState.stageIndex < exercise.stages.length - 1) {
+                    currentState.stageIndex++;
+                    setTimeout(loadExercise, 400); // Pequeña pausa para ver el feedback
+                } else {
+                    if (exercise.isSuperset) {
+                        currentState.stageIndex = 0; // Resetear para la próxima serie
+                    }
+                    setTimeout(startRest, 300);
+                }
             }
         }
         function startRest() {
             const plan = workoutPlan[currentState.day];
+            let currentExercise = plan.exercises[currentState.exerciseIndex];
             let restDuration;
             let isLastExerciseInRound = currentState.exerciseIndex === plan.exercises.length - 1;
 
             if (plan.isCircuit) {
                 restDuration = isLastExerciseInRound ? plan.restBetweenRounds : 0;
             } else {
-                let currentExercise = plan.exercises[currentState.exerciseIndex];
                 restDuration = currentExercise.rest;
                 if (currentState.set >= currentExercise.sets && currentState.exerciseIndex >= plan.exercises.length - 1) {
                     nextSetOrExercise(); return;
@@ -493,6 +531,11 @@
                 }
             } else {
                 const currentExercise = plan.exercises[currentState.exerciseIndex];
+                if (currentExercise.bilateral) {
+                    currentState.currentSide = 'left'; // Reset for next set
+                }
+                // MODIFICACIÓN: Resetear el índice de la etapa
+                currentState.stageIndex = 0;
                 currentState.set++;
                 if (currentState.set > currentExercise.sets) {
                     currentState.set = 1;
@@ -523,6 +566,9 @@
             currentState.exerciseIndex = 0;
             currentState.set = 1;
             currentState.isWorkoutComplete = false;
+            currentState.currentSide = 'left';
+            // MODIFICACIÓN: Resetear el índice de la etapa al cambiar de día
+            currentState.stageIndex = 0;
             clearInterval(currentState.timerInterval);
             dom.mainActionBtn.disabled = false;
             dom.skipBtn.classList.remove('hidden');
@@ -565,16 +611,18 @@
                 playSound('complete');
                 const plan = workoutPlan[currentState.day];
                 if (plan.isCircuit) {
-                    currentState.exerciseIndex++;
-                    if (currentState.exerciseIndex >= plan.exercises.length) {
-                        currentState.exerciseIndex = 0;
-                        currentState.set++;
+                    if (currentState.exerciseIndex === plan.exercises.length - 1) {
+                        startRest();
+                    } else {
+                        currentState.exerciseIndex++;
+                        loadExercise();
                     }
                 } else {
                     currentState.set = 1;
+                    currentState.stageIndex = 0; // Resetear etapa al saltar
                     currentState.exerciseIndex++;
+                    loadExercise();
                 }
-                loadExercise();
             });
             dom.skipRestBtn.addEventListener('click', () => {
                 vibrate();
