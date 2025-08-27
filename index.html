@@ -6,9 +6,9 @@
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#0f172a"/>
     <link rel="manifest" id="manifest">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/0f172a/e0f2fe?text=FitApp">
 
-    <title>App de Entrenamiento Refinada</title>
+    <title>Plan de Entrenamiento 8 Semanas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -27,12 +27,8 @@
         .progress-bar { transition: width 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        .pulse-animation { animation: pulse 1s ease-in-out infinite; }
-        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        .pop-animation { animation: pop 0.3s ease-out; }
         #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
-        .technique-content h3 { font-weight: bold; font-size: 1.1rem; margin-top: 1rem; margin-bottom: 0.5rem; color: #f59e0b; } /* amber-500 */
+        .technique-content h3 { font-weight: bold; font-size: 1.1rem; margin-top: 1rem; margin-bottom: 0.5rem; color: #f59e0b; }
         .technique-content ul { list-style-position: inside; padding-left: 0.5rem; }
         .technique-content li { margin-bottom: 0.5rem; }
     </style>
@@ -42,39 +38,35 @@
     <div id="app" class="container mx-auto p-4 max-w-2xl">
 
         <header class="text-center mb-4">
-            <h1 class="text-3xl lg:text-4xl font-bold text-cyan-400">Plan de Acondicionamiento</h1>
-            <p class="text-slate-400">Tu guía para la máxima preparación física.</p>
+            <h1 class="text-3xl lg:text-4xl font-bold text-cyan-400">Plan de Preparación Física</h1>
+            <p class="text-slate-400">8 Semanas para tu Máximo Rendimiento</p>
         </header>
-        
-        <div class="w-full bg-slate-700 rounded-full h-2.5 mb-6 shadow-inner">
-            <div id="progress-bar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
-        </div>
 
-        <nav class="flex justify-center bg-slate-800 rounded-lg p-2 mb-6 space-x-1 shadow-lg">
-            <button data-day="Día 1" class="day-selector flex-1 text-center py-2 px-3 rounded-md text-sm font-semibold transition-all duration-300 bg-cyan-500 text-slate-900">Día 1</button>
-            <button data-day="Día 2" class="day-selector flex-1 text-center py-2 px-3 rounded-md text-sm font-semibold transition-all duration-300 hover:bg-slate-700">Día 2</button>
-            <button data-day="Día 3" class="day-selector flex-1 text-center py-2 px-3 rounded-md text-sm font-semibold transition-all duration-300 hover:bg-slate-700">Día 3</button>
-            <button data-day="Día 5" class="day-selector flex-1 text-center py-2 px-3 rounded-md text-sm font-semibold transition-all duration-300 hover:bg-slate-700">Día 5</button>
+        <nav class="bg-slate-800 rounded-lg p-3 mb-6 shadow-lg">
+            <div class="flex items-center justify-center mb-3">
+                <label for="week-selector" class="mr-3 font-semibold text-slate-300">Semana:</label>
+                <select id="week-selector" class="bg-slate-700 text-white rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"></select>
+            </div>
+            <div id="day-selectors-container" class="flex justify-center gap-2"></div>
         </nav>
 
         <main id="workout-area" class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 shadow-2xl text-center min-h-[400px] flex flex-col justify-between">
-            <div id="exercise-info" class="fade-in">
-                <p id="set-info" class="text-cyan-400 font-semibold mb-2">Serie 1 de 4</p>
+             <div id="exercise-info" class="fade-in">
+                <p id="set-info" class="text-cyan-400 font-semibold mb-2">Serie 1 de 3</p>
                 <div class="flex items-center justify-center gap-2">
-                    <h2 id="exercise-name" class="text-4xl font-bold">Sentadillas</h2>
+                    <h2 id="exercise-name" class="text-4xl font-bold">Cargando...</h2>
                     <button id="technique-btn" title="Ver técnica y consejos">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-cyan-400 hover:text-cyan-300 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </button>
                 </div>
-                <p id="exercise-detail" class="text-slate-300 text-lg mt-2">4 series de 20 repeticiones</p>
-                <p id="exercise-tempo" class="text-amber-400 font-mono mt-2"></p>
+                <p id="exercise-detail" class="text-slate-300 text-lg mt-2"></p>
             </div>
 
             <div id="interactive-zone" class="my-8">
                 <div id="timer-display" class="timer-display text-8xl text-white hidden">00:00</div>
-                <div id="rep-display" class="text-8xl font-black text-white transition-colors duration-300">20</div>
+                <div id="rep-display" class="text-8xl font-black text-white">15</div>
                  <div id="fail-input-zone" class="hidden flex-col items-center">
                     <label for="fail-reps" class="mb-2 text-slate-400">¿Cuántas repeticiones hiciste?</label>
                     <input type="number" id="fail-reps" class="bg-slate-700 text-white text-center text-4xl font-bold w-32 rounded-lg p-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500">
@@ -83,9 +75,9 @@
 
             <div id="controls">
                 <button id="main-action-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-4 px-6 rounded-lg text-xl transition-all duration-300 transform active:scale-95 shadow-lg">
-                    ¡HECHO! (Iniciar Descanso)
+                    ¡HECHO!
                 </button>
-                 <button id="skip-btn" class="mt-4 text-slate-500 hover:text-slate-400 text-sm">Saltar ejercicio</button>
+                <button id="skip-btn" class="mt-4 text-slate-500 hover:text-slate-400 text-sm">Saltar ejercicio</button>
             </div>
         </main>
         
@@ -96,11 +88,11 @@
 
     </div>
 
+    <!-- Modales -->
     <div id="rest-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50">
         <div class="glassmorphism rounded-2xl p-8 text-center shadow-2xl max-w-sm w-full mx-4 fade-in">
             <p class="text-2xl font-semibold text-slate-300 mb-2">¡A DESCANSAR!</p>
-            <div id="rest-timer" class="timer-display text-8xl text-cyan-400 my-4">01:30</div>
-            <p id="motivation-quote" class="text-amber-400 font-semibold h-6 mb-4"></p>
+            <div id="rest-timer" class="timer-display text-8xl text-cyan-400 my-4">01:00</div>
             <p class="text-lg text-slate-200">Siguiente: <span id="next-exercise-info" class="font-bold"></span></p>
             <button id="skip-rest-btn" class="mt-6 w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 px-6 rounded-lg transition-transform transform active:scale-95">
                 Saltar Descanso
@@ -131,121 +123,219 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // --- PWA SETUP ---
-        const manifestData = {
-            "name": "App de Entrenamiento",
-            "short_name": "Entrenar",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#0f172a",
-            "theme_color": "#0f172a",
-            "description": "Tu guía personal para el acondicionamiento físico.",
-            "icons": [
-                { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-                { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
-            ]
-        };
+        const manifestData = { "name": "Plan de Entrenamiento 8 Semanas", "short_name": "Plan 8 Sem.", "start_url": ".", "display": "standalone", "background_color": "#0f172a", "theme_color": "#0f172a", "description": "Tu plan de 8 semanas para el máximo rendimiento.", "icons": [{ "src": "https://placehold.co/192x192/0f172a/e0f2fe?text=Fit", "sizes": "192x192", "type": "image/png" }, { "src": "https://placehold.co/512x512/0f172a/e0f2fe?text=Fit", "sizes": "512x512", "type": "image/png" }] };
         const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
         const manifestURL = URL.createObjectURL(manifestBlob);
         document.querySelector('#manifest').setAttribute('href', manifestURL);
-
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                const CACHE_NAME = 'workout-app-cache-v1';
-                const urlsToCache = [ '.', 'index.html', 'icon-192.png', 'icon-512.png' ];
-                self.addEventListener('install', event => {
-                    event.waitUntil(
-                        caches.open(CACHE_NAME).then(cache => {
-                            const cachePromises = urlsToCache.map(url => cache.add(new Request(url, {cache: 'reload'})));
-                            return Promise.all(cachePromises);
-                        })
-                    );
-                });
-                self.addEventListener('fetch', event => {
-                    event.respondWith(
-                        caches.match(event.request).then(response => response || fetch(event.request))
-                    );
-                });
-            `;
-            const swBlob = new Blob([swCode], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(swBlob);
-            navigator.serviceWorker.register(swUrl)
-                .then(reg => console.log('ServiceWorker registered:', reg))
-                .catch(err => console.log('ServiceWorker registration failed:', err));
-        }
-
+        if ('serviceWorker' in navigator) { const swCode = `const CACHE_NAME = 'workout-app-cache-v3'; const urlsToCache = [ '.', 'index.html' ]; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache)))); self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`; const swBlob = new Blob([swCode], { type: 'application/javascript' }); navigator.serviceWorker.register(URL.createObjectURL(swBlob)); }
+        
         // --- DATA DE LA RUTINA ---
-        const workoutPlan = {
-            'Día 1': {
-                title: 'Fuerza de Empuje y Piernas',
-                isCircuit: false,
-                exercises: [
-                    // MODIFICACIÓN: Ejercicio combinado en una superserie con 3 etapas
-                    { 
-                        name: 'Superserie: Sentadillas + Zancadas', 
-                        type: 'reps', 
-                        sets: 4, 
-                        rest: 90, 
-                        isSuperset: true,
-                        stages: [
-                            { name: 'Sentadillas', type: 'reps', reps: 20 },
-                            { name: 'Zancadas (Izquierda)', type: 'reps', reps: 10 },
-                            { name: 'Zancadas (Derecha)', type: 'reps', reps: 10 }
-                        ],
-                        tips: '<h3>Puntos Clave Sentadillas:</h3><ul><li>Mantén la espalda recta y el pecho arriba.</li><li>Baja hasta que tus muslos estén paralelos al suelo.</li></ul><h3>Puntos Clave Zancadas:</h3><ul><li>Da un paso largo y baja hasta que ambas rodillas formen 90°.</li><li>Evita que tu rodilla delantera sobrepase tu pie.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Realiza los movimientos de forma controlada pero sin pausa entre ellos.</li></ul>' 
-                    },
-                    { name: 'Planchas (Push-ups)', type: 'fail', sets: 5, reps: 'Al fallo', rest: 60, tempo: 'Tempo: 3s bajada, 1s pausa, 1s subida', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén tu cuerpo en una línea recta desde la cabeza a los talones.</li><li>Baja el pecho hasta casi tocar el suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Coloca los pies en una superficie elevada (silla, escalón).</li><li>Junta más las manos (Planchas diamante).</li></ul>' },
-                    { name: 'Empuje Isométrico', type: 'time', sets: 4, duration: 20, rest: 45, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén el abdomen apretado y la espalda recta.</li><li>Empuja con la máxima fuerza posible durante todo el tiempo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el tiempo de empuje de 20 a 30 segundos.</li><li>Intenta aplicar la fuerza de forma más explosiva.</li></ul>' }
-                ]
+        const workoutData = {
+            "Semana 1": {
+                "Día 1": { title: "Acondicionamiento General", groups: [
+                    { type: 'superset', sets: 3, rest: 45, exercises: [
+                        { name: 'Sentadilla con Peso Corporal', type: 'reps', reps: '15-20', tips: '<h3>Cómo se hace:</h3><p>De pie, con los pies al ancho de los hombros. Empuja las caderas hacia atrás y baja como si te sentaras en una silla, manteniendo el pecho erguido. Baja hasta que los muslos estén paralelos al suelo, asegurándote de que las rodillas no colapsen hacia adentro. Empuja con los talones para volver a subir.</p>' },
+                        { name: 'Plancha Frontal', type: 'time', duration: 45, tips: '<h3>Cómo se hace:</h3><p>Apoya los antebrazos en el suelo, con los codos directamente debajo de los hombros. Mantén el cuerpo en una línea perfectamente recta desde la cabeza hasta los talones, apretando con fuerza el abdomen y los glúteos para que la cadera no se hunda.</p>' }
+                    ]},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Remos Invertidos', type: 'fail', reps: 'AMRAP', tips: '<h3>Cómo se hace:</h3><p>Coloca una barra de forma segura. Acuéstate debajo, agárrala con las manos un poco más anchas que los hombros y, manteniendo el cuerpo recto como una tabla, jala tu pecho hacia la barra apretando los omóplatos. Baja de forma controlada.</p>' },
+                        { name: 'Puente de Glúteos', type: 'reps', reps: 15, tips: '<h3>Cómo se hace:</h3><p>Acostado boca arriba con las rodillas flexionadas y los pies en el suelo. Levanta las caderas hasta que tu cuerpo forme una línea recta desde los hombros hasta las rodillas. Aprieta fuerte los glúteos en la parte más alta.</p>' }
+                    ]},
+                    { type: 'single', sets: 3, rest: 60, exercise: { name: 'Acarreo con Saco (20-30kg)', type: 'distance', distance: 30, tips: '<h3>Cómo se hace:</h3><p>Levanta el saco del suelo de forma segura (agáchate con las piernas, espalda neutra). Una vez de pie, abrázalo contra tu pecho y camina con la espalda recta y el abdomen firme. Este es un ejercicio clave para la fuerza funcional del mundo real.</p>' }}
+                ]},
+                "Día 2": { title: "Fuerza y Estabilidad", groups: [
+                    { type: 'superset', sets: 3, rest: 45, exercises: [
+                        { name: 'Zancadas Inversas', type: 'reps', reps: 12, bilateral: true, tips: '<h3>Cómo se hace:</h3><p>De pie, da un paso largo hacia atrás con una pierna. Baja las caderas hasta que ambas rodillas formen ángulos de 90 grados. La rodilla delantera no debe sobrepasar la punta del pie. Empuja con el pie delantero para volver a la posición inicial.</p>' },
+                        { name: 'Flexiones', type: 'fail', reps: 'AMRAP', tips: '<h3>Cómo se hace:</h3><p>En posición de plancha alta, con las manos un poco más anchas que los hombros. Mantén el cuerpo recto y baja el pecho hacia el suelo doblando los codos a unos 45 grados del cuerpo. Si es necesario, apoya las rodillas en el suelo.</p>' }
+                    ]},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Sentadilla de Pared', type: 'time', duration: 45, tips: '<h3>Cómo se hace:</h3><p>Apoya la espalda completamente en una pared y deslízate hacia abajo hasta que tus rodillas formen un ángulo de 90 grados, como si estuvieras sentado en una silla invisible. Mantén la posición.</p>' },
+                        { name: 'Superman', type: 'reps', reps: 15, tips: '<h3>Cómo se hace:</h3><p>Acuéstate boca abajo con brazos y piernas extendidos. Levanta simultáneamente el pecho, los brazos y las piernas del suelo, contrayendo los músculos de la espalda baja y los glúteos.</p>' }
+                    ]},
+                    { type: 'single', sets: 3, rest: 45, exercise: { name: 'Plancha Lateral', type: 'time', duration: 30, bilateral: true, tips: '<h3>Cómo se hace:</h3><p>De lado, apoyado en un antebrazo con el codo debajo del hombro. Levanta la cadera del suelo, formando una línea recta desde los pies hasta la cabeza. Evita que la cadera se caiga.</p>' }}
+                ]},
+                "Día 3": { title: "Resistencia Muscular", groups: [
+                    { type: 'superset', sets: 3, rest: 45, exercises: [
+                        { name: 'Sentadilla con Peso Corporal', type: 'reps', reps: '20-25', tips: '<h3>Cómo se hace:</h3><p>De pie, con los pies al ancho de los hombros. Empuja las caderas hacia atrás y baja como si te sentaras en una silla, manteniendo el pecho erguido. Baja hasta que los muslos estén paralelos al suelo, asegurándote de que las rodillas no colapsen hacia adentro. Empuja con los talones para volver a subir.</p>' },
+                        { name: 'Plancha Frontal', type: 'time', duration: 60, tips: '<h3>Cómo se hace:</h3><p>Apoya los antebrazos en el suelo, con los codos directamente debajo de los hombros. Mantén el cuerpo en una línea perfectamente recta desde la cabeza hasta los talones, apretando con fuerza el abdomen y los glúteos para que la cadera no se hunda.</p>' }
+                    ]},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Remos Invertidos', type: 'fail', reps: 'AMRAP', tips: '<h3>Cómo se hace:</h3><p>Coloca una barra de forma segura. Acuéstate debajo, agárrala con las manos un poco más anchas que los hombros y, manteniendo el cuerpo recto como una tabla, jala tu pecho hacia la barra apretando los omóplatos. Baja de forma controlada.</p>' },
+                        { name: 'Puente de Glúteos', type: 'reps', reps: 20, tips: '<h3>Cómo se hace:</h3><p>Acostado boca arriba con las rodillas flexionadas y los pies en el suelo. Levanta las caderas hasta que tu cuerpo forme una línea recta desde los hombros hasta las rodillas. Aprieta fuerte los glúteos en la parte más alta.</p>' }
+                    ]},
+                    { type: 'single', sets: 3, rest: 60, exercise: { name: 'Acarreo con Saco (20-30kg)', type: 'distance', distance: 40, tips: '<h3>Cómo se hace:</h3><p>Levanta el saco del suelo de forma segura (agáchate con las piernas, espalda neutra). Una vez de pie, abrázalo contra tu pecho y camina con la espalda recta y el abdomen firme. Este es un ejercicio clave para la fuerza funcional del mundo real.</p>' }}
+                ]}
             },
-            'Día 2': {
-                title: 'Fuerza de Tracción y Agarre',
-                isCircuit: false,
-                exercises: [
-                    { name: 'Dominadas (Pull-ups)', type: 'fail', sets: 5, reps: 'Al fallo', rest: 90, tempo: 'Tempo: Bajada en 4-5s', tips: '<h3>Puntos Clave:</h3><ul><li>Inicia el movimiento retrayendo los omóplatos.</li><li>Sube hasta que tu barbilla sobrepase la barra.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade peso con una mochila.</li><li>Baja de forma extra lenta (fase negativa de 5 segundos).</li></ul>' },
-                    { name: 'Acarreo de Maleta', type: 'time', sets: 5, duration: 45, rest: 60, bilateral: true, detail: '45s por cada mano', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y los hombros nivelados.</li><li>Aprieta el abdomen para no inclinarte hacia el lado del peso.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el peso que cargas.</li><li>Camina una distancia mayor o por más tiempo.</li></ul>' },
-                    { name: 'Aguante en Barra', type: 'fail-time', sets: 3, reps: 'Al fallo', rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén los hombros activos, no dejes que se hundan.</li><li>Aprieta el abdomen para evitar balancearte.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Intenta colgarte con una sola mano por unos segundos.</li><li>Levanta las rodillas hacia el pecho mientras cuelgas.</li></ul>' }
-                ]
+            "Semana 2": {
+                "Día 1": { title: "Sobrecarga Progresiva", groups: [
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Sentadilla con Chaleco (10kg)', type: 'reps', reps: '12-15', tips: '<h3>Técnica Clave:</h3><p>La misma técnica de sentadilla, pero con el chaleco puesto. El peso añadido aumenta la demanda en tus piernas y core, simulando llevar equipo encima.</p>' },
+                        { name: 'Flexiones con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El chaleco añade una resistencia constante que te hará más fuerte en el movimiento de empuje. Mantén el cuerpo recto y el core apretado.</p>' }
+                    ]},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Remos Invertidos con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El peso extra del chaleco hará que este ejercicio de tracción sea mucho más desafiante para tu espalda y bíceps. Concéntrate en apretar los omóplatos.</p>' },
+                        { name: 'Plancha con Chaleco', type: 'time', duration: 45, tips: '<h3>Técnica Clave:</h3><p>El chaleco aumenta la carga sobre tu core, obligándolo a trabajar más duro para mantener la estabilidad. No dejes que la cadera se hunda.</p>' }
+                    ]},
+                    { type: 'single', sets: 4, rest: 60, exercise: { name: 'Acarreo con Saco (20-30kg)', type: 'distance', distance: 30, tips: '<h3>Técnica Clave:</h3><p>Con el aumento de series, enfócate en mantener una postura erguida y un paso constante para mejorar tu capacidad de resistencia.</p>' }}
+                ]},
+                "Día 2": { title: "Fuerza con Carga", groups: [
+                     { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Zancadas con Chaleco', type: 'reps', reps: 10, bilateral: true, tips: '<h3>Técnica Clave:</h3><p>Realiza las zancadas con el chaleco puesto para fortalecer más tus piernas y glúteos de forma unilateral. Controla el equilibrio en cada paso.</p>' },
+                        { name: 'Press Militar con Barra (17kg)', type: 'reps', reps: '8-10', tips: '<h3>Cómo se hace:</h3><p>De pie, sostén la barra a la altura de los hombros. Con el abdomen y glúteos apretados para estabilizar la columna, empuja la barra directamente por encima de tu cabeza hasta extender los brazos por completo. Esencial para la fuerza de empuje vertical.</p>' }
+                    ]},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Peso Muerto con Saco', type: 'reps', reps: 10, tips: '<h3>Cómo se hace:</h3><p>Coloca el saco entre tus pies. Empuja las caderas hacia atrás (bisagra de cadera) manteniendo la espalda neutra para agarrarlo. Levántate extendiendo caderas y rodillas a la vez, manteniendo el saco pegado a tu cuerpo. Enseña el patrón de levantamiento más importante y seguro.</p>' },
+                        { name: 'Remo con Barra (17kg)', type: 'reps', reps: '10-12', tips: '<h3>Cómo se hace:</h3><p>Inclina el torso hacia adelante con la espalda recta (unos 45 grados). Agarra la barra y jálala hacia la parte baja de tu pecho, apretando los músculos de la espalda. Fortalece la espalda para jalar y tirar objetos.</p>' }
+                    ]},
+                    { type: 'single', sets: 3, rest: 45, exercise: { name: 'Empuje Isométrico contra la Pared', type: 'time', duration: 15, bilateral: true, tips: '<h3>Cómo se hace:</h3><p>De lado a una pared, colócate a una distancia de un brazo. Presiona tu mano contra ella con la máxima fuerza posible durante el tiempo indicado. Desarrolla una gran fuerza de empuje estática.</p>' }}
+                ]},
+                "Día 3": { title: "Volumen Aumentado", groups: [
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Sentadilla con Chaleco (10kg)', type: 'reps', reps: '15-18', tips: '<h3>Técnica Clave:</h3><p>La misma técnica de sentadilla, pero con el chaleco puesto. El peso añadido aumenta la demanda en tus piernas y core, simulando llevar equipo encima.</p>' },
+                        { name: 'Flexiones con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El chaleco añade una resistencia constante que te hará más fuerte en el movimiento de empuje. Mantén el cuerpo recto y el core apretado.</p>' }
+                    ]},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Remos Invertidos con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El peso extra del chaleco hará que este ejercicio de tracción sea mucho más desafiante para tu espalda y bíceps. Concéntrate en apretar los omóplatos.</p>' },
+                        { name: 'Plancha con Chaleco', type: 'time', duration: 60, tips: '<h3>Técnica Clave:</h3><p>El chaleco aumenta la carga sobre tu core, obligándolo a trabajar más duro para mantener la estabilidad. No dejes que la cadera se hunda.</p>' }
+                    ]},
+                    { type: 'single', sets: 4, rest: 60, exercise: { name: 'Acarreo con Saco (20-30kg)', type: 'distance', distance: 40, tips: '<h3>Técnica Clave:</h3><p>Con el aumento de series, enfócate en mantener una postura erguida y un paso constante para mejorar tu capacidad de resistencia.</p>' }}
+                ]}
             },
-            'Día 3': {
-                title: 'Resistencia y Core',
-                isCircuit: true,
-                rounds: 4,
-                restBetweenRounds: 120,
-                exercises: [
-                    { name: 'Burpees', type: 'reps', reps: 10, tips: '<h3>Puntos Clave:</h3><ul><li>Realiza el movimiento de forma fluida y controlada.</li><li>El pecho debe tocar el suelo en la parte baja.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade una plancha extra al final de cada repetición.</li><li>Salta lo más alto que puedas, llevando las rodillas al pecho.</li></ul>' },
-                    { name: 'Plancha Abdominal', type: 'time', duration: 45, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén una línea recta de cabeza a talones.</li><li>Aprieta glúteos y abdomen para no arquear la espalda.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Levanta un brazo o una pierna del suelo.</li><li>Coloca tus antebrazos sobre una superficie inestable.</li></ul>' },
-                    { name: 'Sentadillas con Salto', type: 'reps', reps: 15, tips: '<h3>Puntos Clave:</h3><ul><li>Aterriza suavemente, absorbiendo el impacto con las rodillas.</li><li>Usa los brazos para impulsarte hacia arriba.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Salta con más explosividad y altura.</li><li>Intenta juntar las rodillas al pecho en el aire.</li></ul>' },
-                    { name: 'Escaladores', type: 'time', duration: 45, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la cadera baja y el core activado.</li><li>Alterna las rodillas de forma rítmica y controlada.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta la velocidad al máximo.</li><li>Usa discos deslizantes o un trapo bajo los pies.</li></ul>' }
-                ]
+            "Semana 3": {
+                "Día 1": { title: "Intensidad Creciente", groups: [
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Sentadilla Goblet con Saco', type: 'reps', reps: '10-12', tips: '<h3>Cómo se hace:</h3><p>Abraza el saco con fuerza contra tu pecho. Realiza una sentadilla profunda. La carga frontal te obliga a mantener el torso erguido, fortaleciendo enormemente el core y la espalda alta.</p>' },
+                        { name: 'Flexiones con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El chaleco añade una resistencia constante que te hará más fuerte en el movimiento de empuje. Mantén el cuerpo recto y el core apretado.</p>' }
+                    ]},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Remo con Barra (17kg)', type: 'reps', reps: 12, tips: '<h3>Cómo se hace:</h3><p>Inclina el torso hacia adelante con la espalda recta (unos 45 grados). Agarra la barra y jálala hacia la parte baja de tu pecho, apretando los músculos de la espalda. Fortalece la espalda para jalar y tirar objetos.</p>' },
+                        { name: 'Press Militar con Barra (17kg)', type: 'reps', reps: 10, tips: '<h3>Cómo se hace:</h3><p>De pie, sostén la barra a la altura de los hombros. Con el abdomen y glúteos apretados para estabilizar la columna, empuja la barra directamente por encima de tu cabeza hasta extender los brazos por completo.</p>' }
+                    ]},
+                    { type: 'single', sets: 3, rest: 75, exercise: { name: 'Acarreo con Saco + Chaleco', type: 'distance', distance: 30, tips: '<h3>Técnica Clave:</h3><p>Combinamos la carga constante del chaleco con la carga inestable del saco. Esto simula un escenario de trabajo muy realista (llevar herramientas puestas mientras cargas un objeto).</p>' }}
+                ]},
+                "Día 2": { title: "Full Body Resistencia", groups: [
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Zancadas con Saco (Abrazo)', type: 'reps', reps: 8, bilateral: true, tips: '<h3>Cómo se hace:</h3><p>Abraza el saco contra tu pecho y realiza las zancadas. La inestabilidad del saco desafiará tu equilibrio y core. Mantén el torso erguido.</p>' },
+                        { name: 'Remos Invertidos con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El peso extra del chaleco hará que este ejercicio de tracción sea mucho más desafiante para tu espalda y bíceps. Concéntrate en apretar los omóplatos.</p>' }
+                    ]},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Peso Muerto con Saco', type: 'reps', reps: 12, tips: '<h3>Cómo se hace:</h3><p>Coloca el saco entre tus pies. Empuja las caderas hacia atrás (bisagra de cadera) manteniendo la espalda neutra para agarrarlo. Levántate extendiendo caderas y rodillas a la vez, manteniendo el saco pegado a tu cuerpo.</p>' },
+                        { name: 'Plancha con Chaleco', type: 'time', duration: 75, tips: '<h3>Técnica Clave:</h3><p>El chaleco aumenta la carga sobre tu core, obligándolo a trabajar más duro para mantener la estabilidad. No dejes que la cadera se hunda.</p>' }
+                    ]},
+                    { type: 'single', sets: 3, rest: 45, exercise: { name: 'Sentadilla de Pared con Saco', type: 'time', duration: 45, tips: '<h3>Cómo se hace:</h3><p>En la posición de sentadilla de pared, sostén el saco sobre tus muslos para añadir una carga directa a tus cuádriceps.</p>' }}
+                ]},
+                "Día 3": { title: "Adaptación al Volumen", groups: [
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Sentadilla Goblet con Saco', type: 'reps', reps: '12-15', tips: '<h3>Cómo se hace:</h3><p>Abraza el saco con fuerza contra tu pecho. Realiza una sentadilla profunda. La carga frontal te obliga a mantener el torso erguido, fortaleciendo enormemente el core y la espalda alta.</p>' },
+                        { name: 'Flexiones con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El chaleco añade una resistencia constante que te hará más fuerte en el movimiento de empuje. Mantén el cuerpo recto y el core apretado.</p>' }
+                    ]},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Remo con Barra (17kg)', type: 'reps', reps: '12-15', tips: '<h3>Cómo se hace:</h3><p>Inclina el torso hacia adelante con la espalda recta (unos 45 grados). Agarra la barra y jálala hacia la parte baja de tu pecho, apretando los músculos de la espalda.</p>' },
+                        { name: 'Press Militar con Barra (17kg)', type: 'reps', reps: '10-12', tips: '<h3>Cómo se hace:</h3><p>De pie, sostén la barra a la altura de los hombros. Con el abdomen y glúteos apretados para estabilizar la columna, empuja la barra directamente por encima de tu cabeza hasta extender los brazos por completo.</p>' }
+                    ]},
+                    { type: 'single', sets: 3, rest: 75, exercise: { name: 'Acarreo con Saco + Chaleco', type: 'distance', distance: 40, tips: '<h3>Técnica Clave:</h3><p>Combinamos la carga constante del chaleco con la carga inestable del saco. Esto simula un escenario de trabajo muy realista (llevar herramientas puestas mientras cargas un objeto).</p>' }}
+                ]}
             },
-            'Día 5': {
-                title: 'Poder (Cuerpo Completo)',
-                isCircuit: false,
-                exercises: [
-                    { name: 'Sentadillas', type: 'reps', sets: 3, reps: 15, rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y el pecho arriba.</li><li>Baja hasta que tus muslos estén paralelos al suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade una pausa de 3 segundos en la parte más baja.</li><li>Intenta hacer sentadillas con salto (Jump Squats).</li></ul>' },
-                    { name: 'Dominadas', type: 'fail', sets: 3, reps: 'Al fallo', rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Inicia el movimiento retrayendo los omóplatos.</li><li>Sube hasta que tu barbilla sobrepase la barra.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Añade peso con una mochila.</li><li>Baja de forma extra lenta (fase negativa de 5 segundos).</li></ul>' },
-                    { name: 'Planchas', type: 'fail', sets: 3, reps: 'Al fallo', rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén tu cuerpo en una línea recta desde la cabeza a los talones.</li><li>Baja el pecho hasta casi tocar el suelo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Coloca los pies en una superficie elevada (silla, escalón).</li><li>Junta más las manos (Planchas diamante).</li></ul>' },
-                    { name: 'Acarreo de Maleta', type: 'time', sets: 3, duration: 50, rest: 60, bilateral: true, detail: '50s por cada mano', tips: '<h3>Puntos Clave:</h3><ul><li>Mantén la espalda recta y los hombros nivelados.</li><li>Aprieta el abdomen para no inclinarte hacia el lado del peso.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el peso que cargas.</li><li>Camina una distancia mayor o por más tiempo.</li></ul>' },
-                    { name: 'Empuje Isométrico', type: 'time', sets: 3, duration: 15, rest: 60, tips: '<h3>Puntos Clave:</h3><ul><li>Mantén el abdomen apretado y la espalda recta.</li><li>Empuja con la máxima fuerza posible durante todo el tiempo.</li></ul><h3>⚡ Cómo intensificar:</h3><ul><li>Aumenta el tiempo de empuje de 20 a 30 segundos.</li><li>Intenta aplicar la fuerza de forma más explosiva.</li></ul>' }
-                ]
+             "Semana 4": {
+                "Día 1": { title: "Pico de Fuerza", groups: [
+                    { type: 'superset', sets: 4, rest: 75, exercises: [
+                        { name: 'Sentadilla Frontal con Saco', type: 'reps', reps: 8, tips: '<h3>Cómo se hace:</h3><p>Sostén el saco en la posición "rack" (apoyado en la parte delantera de los hombros, con los codos apuntando hacia adelante). Esto es más difícil que la sentadilla Goblet y exige aún más al core y la espalda alta.</p>' },
+                        { name: 'Press Militar con Barra', type: 'reps', reps: 8, tips: '<h3>Cómo se hace:</h3><p>De pie, sostén la barra a la altura de los hombros. Con el abdomen y glúteos apretados para estabilizar la columna, empuja la barra directamente por encima de tu cabeza hasta extender los brazos por completo.</p>' }
+                    ]},
+                    { type: 'superset', sets: 4, rest: 75, exercises: [
+                        { name: 'Peso Muerto con Saco', type: 'reps', reps: 10, tips: '<h3>Cómo se hace:</h3><p>Coloca el saco entre tus pies. Empuja las caderas hacia atrás (bisagra de cadera) manteniendo la espalda neutra para agarrarlo. Levántate extendiendo caderas y rodillas a la vez, manteniendo el saco pegado a tu cuerpo.</p>' },
+                        { name: 'Remos Invertidos con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El peso extra del chaleco hará que este ejercicio de tracción sea mucho más desafiante para tu espalda y bíceps. Concéntrate en apretar los omóplatos.</p>' }
+                    ]},
+                    { type: 'single', sets: 4, rest: 75, exercise: { name: 'Acarreo con Saco + Chaleco', type: 'distance', distance: 30, tips: '<h3>Técnica Clave:</h3><p>Combinamos la carga constante del chaleco con la carga inestable del saco. Esto simula un escenario de trabajo muy realista (llevar herramientas puestas mientras cargas un objeto).</p>' }}
+                ]},
+                "Día 2": { title: "Potencia y Control", groups: [
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Zancadas con Saco (al hombro)', type: 'reps', reps: 8, bilateral: true, tips: '<h3>Cómo se hace:</h3><p>Coloca el saco sobre un solo hombro. Esto crea una carga asimétrica que obliga a los músculos de tu core (especialmente los oblicuos) a trabajar intensamente para evitar que te inclines.</p>' },
+                        { name: 'Flexiones (Pies elevados)', type: 'fail', reps: 'AMRAP', tips: '<h3>Cómo se hace:</h3><p>Coloca los pies sobre una caja o silla. Esto aumenta la proporción de tu peso corporal que levantas, haciendo el ejercicio más difícil y enfocándose más en la parte superior del pecho y los hombros.</p>' }
+                    ]},
+                    { type: 'superset', sets: 4, rest: 60, exercises: [
+                        { name: 'Remo con Barra (17kg)', type: 'reps', reps: 10, tips: '<h3>Cómo se hace:</h3><p>Inclina el torso hacia adelante con la espalda recta (unos 45 grados). Agarra la barra y jálala hacia la parte baja de tu pecho, apretando los músculos de la espalda.</p>' },
+                        { name: 'Empuje Isométrico contra la Pared', type: 'time', duration: 20, bilateral: true, tips: '<h3>Cómo se hace:</h3><p>De lado a una pared, colócate a una distancia de un brazo. Presiona tu mano contra ella con la máxima fuerza posible durante el tiempo indicado.</p>' }
+                    ]}
+                ]},
+                "Día 3": { title: "Pico de Fuerza (Rep.)", isRepeat: true, repeatDay: "Día 1" }
+            },
+            "Semana 5": {
+                "Día 1": { title: "Intensificación Compuesta", groups: [
+                    { type: 'single', sets: 4, rest: 90, exercise: { name: 'Cargada al Hombro con Saco', type: 'reps', reps: 5, bilateral: true, tips: '<h3>Cómo se hace:</h3><p>Desde el suelo, usa un tirón explosivo de caderas para levantar e impulsar el saco hacia arriba hasta recibirlo sobre un hombro, absorbiendo el impacto con una ligera flexión de rodillas. Es un movimiento de cuerpo completo que te enseña a usar la potencia de tus caderas para mover objetos pesados.</p>' }},
+                    { type: 'single', sets: 3, rest: 75, exercise: { name: 'Sentadilla Frontal con Saco + Chaleco', type: 'reps', reps: '8-10', tips: '<h3>Técnica Clave:</h3><p>Con el chaleco añadido, el desafío para el core y la espalda alta es máximo. Mantén los codos altos y el torso erguido durante todo el movimiento.</p>' }},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Remo con Barra (17kg)', type: 'reps', reps: 10, tips: '<h3>Cómo se hace:</h3><p>Inclina el torso hacia adelante con la espalda recta (unos 45 grados). Agarra la barra y jálala hacia la parte baja de tu pecho, apretando los músculos de la espalda.</p>' },
+                        { name: 'Flexiones con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El chaleco añade una resistencia constante que te hará más fuerte en el movimiento de empuje. Mantén el cuerpo recto y el core apretado.</p>' }
+                    ]},
+                    { type: 'single', sets: 3, rest: 60, exercise: { name: 'Acarreo con Saco (Abrazo)', type: 'distance', distance: 50, tips: '<h3>Técnica Clave:</h3><p>Aumentamos la distancia para desafiar tu resistencia. Concéntrate en una respiración rítmica y en mantener el abdomen apretado para proteger tu espalda.</p>' }}
+                ]},
+                "Día 2": { title: "Fuerza Máxima", groups: [
+                    { type: 'single', sets: 4, rest: 90, exercise: { name: 'Peso Muerto con Saco', type: 'reps', reps: 8, tips: '<h3>Cómo se hace:</h3><p>Coloca el saco entre tus pies. Empuja las caderas hacia atrás (bisagra de cadera) manteniendo la espalda neutra para agarrarlo. Levántate extendiendo caderas y rodillas a la vez, manteniendo el saco pegado a tu cuerpo.</p>' }},
+                    { type: 'single', sets: 4, rest: 75, exercise: { name: 'Press Militar con Barra (17kg)', type: 'reps', reps: 8, tips: '<h3>Cómo se hace:</h3><p>De pie, sostén la barra a la altura de los hombros. Con el abdomen y glúteos apretados para estabilizar la columna, empuja la barra directamente por encima de tu cabeza hasta extender los brazos por completo.</p>' }},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Zancadas con Chaleco', type: 'reps', reps: 12, bilateral: true, tips: '<h3>Técnica Clave:</h3><p>Realiza las zancadas con el chaleco puesto para fortalecer más tus piernas y glúteos de forma unilateral. Controla el equilibrio en cada paso.</p>' },
+                        { name: 'Remos Invertidos con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El peso extra del chaleco hará que este ejercicio de tracción sea mucho más desafiante para tu espalda y bíceps. Concéntrate en apretar los omóplatos.</p>' }
+                    ]},
+                    { type: 'single', sets: 3, rest: 60, exercise: { name: 'Plancha con Chaleco', type: 'time', duration: 90, tips: '<h3>Técnica Clave:</h3><p>El chaleco aumenta la carga sobre tu core, obligándolo a trabajar más duro para mantener la estabilidad. No dejes que la cadera se hunda.</p>' }}
+                ]},
+                "Día 3": { title: "Intensificación Compuesta (Rep.)", isRepeat: true, repeatDay: "Día 1" }
+            },
+            "Semana 6": {
+                "Día 1": { title: "Volumen y Potencia", groups: [
+                    { type: 'single', sets: 5, rest: 90, exercise: { name: 'Cargada al Hombro con Saco', type: 'reps', reps: 5, bilateral: true, tips: '<h3>Cómo se hace:</h3><p>Desde el suelo, usa un tirón explosivo de caderas para levantar e impulsar el saco hacia arriba hasta recibirlo sobre un hombro, absorbiendo el impacto con una ligera flexión de rodillas.</p>' }},
+                    { type: 'single', sets: 4, rest: 75, exercise: { name: 'Sentadilla Frontal con Saco + Chaleco', type: 'reps', reps: 8, tips: '<h3>Técnica Clave:</h3><p>Con el chaleco añadido, el desafío para el core y la espalda alta es máximo. Mantén los codos altos y el torso erguido durante todo el movimiento.</p>' }},
+                    { type: 'superset', sets: 4, rest: 60, exercises: [
+                        { name: 'Remo con Barra (17kg)', type: 'reps', reps: 8, tips: '<h3>Cómo se hace:</h3><p>Inclina el torso hacia adelante con la espalda recta (unos 45 grados). Agarra la barra y jálala hacia la parte baja de tu pecho, apretando los músculos de la espalda.</p>' },
+                        { name: 'Flexiones con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El chaleco añade una resistencia constante que te hará más fuerte en el movimiento de empuje. Mantén el cuerpo recto y el core apretado.</p>' }
+                    ]},
+                    { type: 'single', sets: 3, rest: 60, exercise: { name: 'Acarreo con Saco + Chaleco', type: 'distance', distance: 40, tips: '<h3>Técnica Clave:</h3><p>Combinamos la carga constante del chaleco con la carga inestable del saco. Esto simula un escenario de trabajo muy realista (llevar herramientas puestas mientras cargas un objeto).</p>' }}
+                ]},
+                "Día 2": { title: "Resistencia a la Fuerza", groups: [
+                    { type: 'single', sets: 4, rest: 90, exercise: { name: 'Peso Muerto con Saco', type: 'reps', reps: '8-10', tips: '<h3>Cómo se hace:</h3><p>Coloca el saco entre tus pies. Empuja las caderas hacia atrás (bisagra de cadera) manteniendo la espalda neutra para agarrarlo. Levántate extendiendo caderas y rodillas a la vez, manteniendo el saco pegado a tu cuerpo.</p>' }},
+                    { type: 'single', sets: 4, rest: 75, exercise: { name: 'Press Militar con Barra (17kg)', type: 'reps', reps: '8-10', tips: '<h3>Cómo se hace:</h3><p>De pie, sostén la barra a la altura de los hombros. Con el abdomen y glúteos apretados para estabilizar la columna, empuja la barra directamente por encima de tu cabeza hasta extender los brazos por completo.</p>' }},
+                    { type: 'superset', sets: 3, rest: 60, exercises: [
+                        { name: 'Zancadas con Saco (al hombro)', type: 'reps', reps: 10, bilateral: true, tips: '<h3>Cómo se hace:</h3><p>Coloca el saco sobre un solo hombro. Esto crea una carga asimétrica que obliga a los músculos de tu core (especialmente los oblicuos) a trabajar intensamente para evitar que te inclines.</p>' },
+                        { name: 'Remos Invertidos con Chaleco', type: 'fail', reps: 'AMRAP', tips: '<h3>Técnica Clave:</h3><p>El peso extra del chaleco hará que este ejercicio de tracción sea mucho más desafiante para tu espalda y bíceps. Concéntrate en apretar los omóplatos.</p>' }
+                    ]},
+                    { type: 'single', sets: 3, rest: 60, exercise: { name: 'Empuje Isométrico contra la Pared', type: 'time', duration: 25, bilateral: true, tips: '<h3>Cómo se hace:</h3><p>De lado a una pared, colócate a una distancia de un brazo. Presiona tu mano contra ella con la máxima fuerza posible durante el tiempo indicado.</p>' }}
+                ]},
+                "Día 3": { title: "Volumen y Potencia (Rep.)", isRepeat: true, repeatDay: "Día 1" }
+            },
+            "Semana 7": {
+                "Día 1": { title: "Circuito Metabólico", isCircuit: true, rounds: 4, restBetweenRounds: 90, exercises: [
+                    { name: 'Cargada al Hombro con Saco', type: 'reps', reps: 4, bilateral: true, tips: '<h3>Punto Clave del Circuito:</h3><p>Realiza todos los ejercicios seguidos con el mínimo descanso. Una vez completado el acarreo, descansa 90s y repite. Esto mejora drásticamente la resistencia-fuerza.</p><h3>Técnica:</h3><p>Usa un tirón explosivo de caderas para levantar e impulsar el saco hacia un hombro.</p>' },
+                    { name: 'Sentadilla Goblet con Saco', type: 'reps', reps: 10, tips: '<h3>Punto Clave del Circuito:</h3><p>Mantén un ritmo constante y una buena técnica a pesar de la fatiga.</p><h3>Técnica:</h3><p>Abraza el saco contra tu pecho y mantén el torso erguido.</p>' },
+                    { name: 'Remo con Barra (17kg)', type: 'reps', reps: 12, tips: '<h3>Punto Clave del Circuito:</h3><p>Concéntrate en apretar la espalda en cada repetición.</p><h3>Técnica:</h3><p>Inclina el torso con la espalda recta y jala la barra hacia la parte baja del pecho.</p>' },
+                    { name: 'Flexiones', type: 'fail', reps: 'AMRAP', tips: '<h3>Punto Clave del Circuito:</h3><p>Haz tantas repeticiones como puedas con buena forma. No sacrifiques la técnica por velocidad.</p><h3>Técnica:</h3><p>Cuerpo recto, baja el pecho casi hasta el suelo.</p>' },
+                    { name: 'Acarreo con Saco', type: 'distance', distance: 30, tips: '<h3>Punto Clave del Circuito:</h3><p>Este es el último esfuerzo de la ronda. Mantén la postura y respira.</p><h3>Técnica:</h3><p>Abraza el saco, espalda recta, abdomen firme.</p>' }
+                ]},
+                "Día 2": { title: "Descanso Activo", isRestDay: true },
+                "Día 3": { title: "Circuito Metabólico (Rep.)", isRepeat: true, repeatDay: "Día 1" }
+            },
+            "Semana 8": {
+                "Día 1": { title: "Prueba Final", isCircuit: true, rounds: 4, restBetweenRounds: 0, specialNote: "Realizar con el menor descanso posible. Mide el tiempo total.", exercises: [
+                    { name: 'Cargada al Hombro con Saco', type: 'reps', reps: 4, bilateral: true, tips: '<h3>Objetivo de la Prueba:</h3><p>Completa el circuito en el menor tiempo posible, reduciendo al mínimo el descanso. Anota tu tiempo total para medir tu mejora.</p><h3>Técnica:</h3><p>Usa un tirón explosivo de caderas para levantar e impulsar el saco hacia un hombro.</p>' },
+                    { name: 'Sentadilla Goblet con Saco', type: 'reps', reps: 10, tips: '<h3>Objetivo de la Prueba:</h3><p>Mantén la intensidad y la técnica. ¡No te detengas!</p><h3>Técnica:</h3><p>Abraza el saco contra tu pecho y mantén el torso erguido.</p>' },
+                    { name: 'Remo con Barra (17kg)', type: 'reps', reps: 12, tips: '<h3>Objetivo de la Prueba:</h3><p>Sigue moviéndote de un ejercicio a otro de forma fluida.</p><h3>Técnica:</h3><p>Inclina el torso con la espalda recta y jala la barra hacia la parte baja del pecho.</p>' },
+                    { name: 'Flexiones', type: 'fail', reps: 'AMRAP', tips: '<h3>Objetivo de la Prueba:</h3><p>Da tu máximo esfuerzo en cada serie al fallo.</p><h3>Técnica:</h3><p>Cuerpo recto, baja el pecho casi hasta el suelo.</p>' },
+                    { name: 'Acarreo con Saco', type: 'distance', distance: 30, tips: '<h3>Objetivo de la Prueba:</h3><p>Finaliza cada ronda con fuerza. ¡Es la prueba final!</p><h3>Técnica:</h3><p>Abraza el saco, espalda recta, abdomen firme.</p>' }
+                ]},
+                "Día 2": { title: "Descanso Activo", isRestDay: true },
+                "Día 3": { title: "Último Esfuerzo", isRepeat: true, repeatWeek: "Semana 7", repeatDay: "Día 1" }
             }
         };
 
-        const motivationQuotes = [ "¡Vamos, tú puedes!", "¡Una más!", "¡La fuerza está contigo!", "¡Sin dolor no hay gloria!", "¡Sigue así!", "¡Imparable!", "¡Con todo!" ];
-
         // --- ESTADO DE LA APP ---
-        // MODIFICACIÓN: Se añade stageIndex para controlar las etapas de la superserie
-        let currentState = { day: 'Día 1', exerciseIndex: 0, set: 1, timerInterval: null, soundsReady: false, isWorkoutComplete: false, currentSide: 'left', stageIndex: 0 };
+        let currentState = { week: 'Semana 1', day: 'Día 1', groupIndex: 0, exerciseInGroupIndex: 0, set: 1, round: 1, currentSide: 'left', timerInterval: null, soundsReady: false, isWorkoutComplete: false };
 
         // --- ELEMENTOS DEL DOM ---
         const dom = {
-            daySelectors: document.querySelectorAll('.day-selector'),
-            progressBar: document.getElementById('progress-bar'),
+            weekSelector: document.getElementById('week-selector'),
+            daySelectorsContainer: document.getElementById('day-selectors-container'),
             setInfo: document.getElementById('set-info'),
-            exerciseInfo: document.getElementById('exercise-info'),
             exerciseName: document.getElementById('exercise-name'),
             exerciseDetail: document.getElementById('exercise-detail'),
-            exerciseTempo: document.getElementById('exercise-tempo'),
             timerDisplay: document.getElementById('timer-display'),
             repDisplay: document.getElementById('rep-display'),
             failInputZone: document.getElementById('fail-input-zone'),
@@ -260,7 +350,7 @@
             exerciseList: document.getElementById('exercise-list'),
             welcomeModal: document.getElementById('welcome-modal'),
             startAppBtn: document.getElementById('start-app-btn'),
-            motivationQuote: document.getElementById('motivation-quote'),
+            workoutArea: document.getElementById('workout-area'),
             techniqueBtn: document.getElementById('technique-btn'),
             techniqueModal: document.getElementById('technique-modal'),
             techniqueTitle: document.getElementById('technique-title'),
@@ -277,302 +367,310 @@
             sounds.countdownTick = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination();
             currentState.soundsReady = true;
         }
-        function playSound(sound) {
-            if (!currentState.soundsReady) return;
-            try {
-                const now = Tone.now();
-                if (sound === 'start') sounds.start.triggerAttackRelease('C5', '8n', now);
-                if (sound === 'complete') sounds.complete.triggerAttackRelease('G5', '8n', now);
-                if (sound === 'countdownTick') sounds.countdownTick.triggerAttackRelease('A5', '16n', now);
-                if (sound === 'finish') {
-                    sounds.finish.triggerAttackRelease("C2", "8n", now);
-                    sounds.finish.triggerAttackRelease("G2", "8n", now + 0.2);
-                    sounds.finish.triggerAttackRelease("C3", "8n", now + 0.4);
-                }
-            } catch (error) { console.error("Error al reproducir sonido:", error); }
-        }
+        function playSound(sound) { if (!currentState.soundsReady) return; try { const now = Tone.now(); if (sound === 'start') sounds.start.triggerAttackRelease('C5', '8n', now); if (sound === 'complete') sounds.complete.triggerAttackRelease('G5', '8n', now); if (sound === 'countdownTick') sounds.countdownTick.triggerAttackRelease('A5', '16n', now); if (sound === 'finish') { sounds.finish.triggerAttackRelease("C2", "8n", now); sounds.finish.triggerAttackRelease("G2", "8n", now + 0.2); sounds.finish.triggerAttackRelease("C3", "8n", now + 0.4); } } catch (error) { console.error("Error al reproducir sonido:", error); } }
         function vibrate(pattern = 50) { if ('vibrate' in navigator) navigator.vibrate(pattern); }
-        function triggerConfetti() {
-            const myCanvas = document.getElementById('confetti-canvas');
-            const myConfetti = confetti.create(myCanvas, { resize: true, useWorker: true });
-            myConfetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
-        }
+        function triggerConfetti() { const myCanvas = document.getElementById('confetti-canvas'); const myConfetti = confetti.create(myCanvas, { resize: true, useWorker: true }); myConfetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } }); }
 
         // --- LÓGICA DE LA APP ---
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const secs = (seconds % 60).toString().padStart(2, '0');
-            return `${mins}:${secs}`;
-        }
-        function startTimer(duration, displayElement, onEnd) {
-            let timeLeft = duration;
-            displayElement.textContent = formatTime(timeLeft);
-            displayElement.classList.add('pulse-animation');
-            clearInterval(currentState.timerInterval);
-            currentState.timerInterval = setInterval(() => {
-                timeLeft--;
-                displayElement.textContent = formatTime(timeLeft);
-                if (timeLeft <= 3 && timeLeft > 0) {
-                    playSound('countdownTick');
-                }
-                if (timeLeft <= 0) {
-                    clearInterval(currentState.timerInterval);
-                    displayElement.classList.remove('pulse-animation');
-                    playSound('finish');
-                    vibrate([100, 50, 100]);
-                    if (onEnd) onEnd();
-                }
-            }, 1000);
-        }
-        function updateProgressBar() {
-            const plan = workoutPlan[currentState.day];
-            let progress = 0;
-            if (plan.isCircuit) {
-                const totalSteps = plan.rounds * plan.exercises.length;
-                const completedSteps = (currentState.set - 1) * plan.exercises.length + currentState.exerciseIndex;
-                progress = (completedSteps / totalSteps) * 100;
-            } else {
-                const totalExercises = plan.exercises.length;
-                progress = (currentState.exerciseIndex / totalExercises) * 100;
+        function formatTime(seconds) { const mins = Math.floor(seconds / 60).toString().padStart(2, '0'); const secs = (seconds % 60).toString().padStart(2, '0'); return `${mins}:${secs}`; }
+        function startTimer(duration, displayElement, onEnd) { let timeLeft = duration; displayElement.textContent = formatTime(timeLeft); clearInterval(currentState.timerInterval); currentState.timerInterval = setInterval(() => { timeLeft--; displayElement.textContent = formatTime(timeLeft); if (timeLeft <= 3 && timeLeft > 0) { playSound('countdownTick'); } if (timeLeft <= 0) { clearInterval(currentState.timerInterval); playSound('finish'); vibrate([100, 50, 100]); if (onEnd) onEnd(); } }, 1000); }
+        
+        function getWorkoutDay() {
+            let week = workoutData[currentState.week];
+            let day = week[currentState.day];
+            if (day.isRepeat) {
+                const repeatWeekKey = day.repeatWeek || currentState.week;
+                const repeatDayKey = day.repeatDay;
+                day = workoutData[repeatWeekKey][repeatDayKey];
             }
-            dom.progressBar.style.width = `${progress}%`;
+            return day;
         }
-        function updateExerciseList() {
-            const plan = workoutPlan[currentState.day];
-            dom.planDayTitle.textContent = plan.title;
-            dom.exerciseList.innerHTML = '';
-            plan.exercises.forEach((ex, index) => {
-                const isCurrent = index === currentState.exerciseIndex;
-                let isDone = false;
-                if(plan.isCircuit) {
-                    isDone = (currentState.set > 1);
-                } else {
-                    isDone = index < currentState.exerciseIndex;
-                }
-                
-                const li = document.createElement('li');
-                li.className = `flex items-center p-3 rounded-lg transition-all duration-300 ${isCurrent ? 'bg-slate-700 scale-105 shadow-lg' : 'bg-slate-800'} ${isDone ? 'opacity-50' : ''}`;
-                const repsOrDuration = plan.isCircuit ? (ex.reps ? `${ex.reps} reps` : `${ex.duration}s`) : `${ex.sets} x ${ex.reps || ex.duration + 's'}`;
-                li.innerHTML = `
-                    <div class="flex-shrink-0 w-6 h-6 rounded-full ${isCurrent ? 'bg-cyan-400 animate-pulse' : (isDone ? 'bg-green-500' : 'bg-slate-600')} flex items-center justify-center mr-4">
-                       ${isDone ? '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : ''}
-                    </div>
-                    <span class="font-semibold">${ex.name}</span>
-                    <span class="ml-auto text-sm text-slate-400">${repsOrDuration}</span>
-                `;
-                dom.exerciseList.appendChild(li);
-            });
-        }
+
         function loadExercise() {
-            dom.exerciseInfo.classList.remove('fade-in');
-            void dom.exerciseInfo.offsetWidth;
-            dom.exerciseInfo.classList.add('fade-in');
-            const plan = workoutPlan[currentState.day];
-            if ((plan.isCircuit && currentState.set > plan.rounds) || (!plan.isCircuit && currentState.exerciseIndex >= plan.exercises.length)) {
-                showCompletionScreen();
+            dom.workoutArea.classList.remove('hidden');
+            dom.skipBtn.classList.remove('hidden');
+            dom.techniqueBtn.classList.remove('hidden');
+            const dayPlan = getWorkoutDay();
+
+            if (dayPlan.isRestDay) {
+                showRestDayScreen();
                 return;
             }
-            const exercise = plan.exercises[currentState.exerciseIndex];
-            
-            // MODIFICACIÓN: Lógica para manejar superseries, ejercicios bilaterales y normales
-            let currentPart = exercise; // Por defecto, la parte actual es el ejercicio completo
-            
-            if (exercise.isSuperset) {
-                currentPart = exercise.stages[currentState.stageIndex];
-                dom.setInfo.textContent = `${exercise.name} | Serie ${currentState.set} de ${exercise.sets}`;
-                dom.exerciseName.textContent = currentPart.name;
-                dom.exerciseDetail.textContent = `${currentPart.reps} repeticiones`;
-            } else {
-                dom.setInfo.textContent = plan.isCircuit ? `Ronda ${currentState.set} de ${plan.rounds}` : `Serie ${currentState.set} de ${exercise.sets}`;
-                let exerciseName = exercise.name;
-                if (exercise.bilateral) {
-                    exerciseName += ` (${currentState.currentSide === 'left' ? 'Lado Izquierdo' : 'Lado Derecho'})`;
-                }
-                dom.exerciseName.textContent = exerciseName;
-                dom.exerciseDetail.textContent = plan.isCircuit ? (exercise.reps ? `${exercise.reps} reps` : `${exercise.duration}s`) : (exercise.detail || `${exercise.sets} series de ${exercise.reps || exercise.duration + 's'}`);
-            }
 
-            dom.exerciseTempo.textContent = exercise.tempo || '';
+            if (dayPlan.isCircuit) {
+                if (currentState.round > dayPlan.rounds) {
+                    showCompletionScreen();
+                    return;
+                }
+                const exercise = dayPlan.exercises[currentState.exerciseInGroupIndex];
+                dom.setInfo.textContent = `Ronda ${currentState.round} de ${dayPlan.rounds}`;
+                displayExerciseDetails(exercise);
+
+            } else {
+                if (currentState.groupIndex >= dayPlan.groups.length) {
+                    showCompletionScreen();
+                    return;
+                }
+                const group = dayPlan.groups[currentState.groupIndex];
+                const exercise = group.type === 'single' ? group.exercise : group.exercises[currentState.exerciseInGroupIndex];
+                dom.setInfo.textContent = `Serie ${currentState.set} de ${group.sets}`;
+                displayExerciseDetails(exercise);
+            }
+            updateExerciseList();
+        }
+
+        function displayExerciseDetails(exercise) {
+            let exerciseName = exercise.name;
+            if (exercise.bilateral) {
+                exerciseName += ` (${currentState.currentSide === 'left' ? 'Izquierda' : 'Derecha'})`;
+            }
+            dom.exerciseName.textContent = exerciseName;
+
             dom.timerDisplay.classList.add('hidden');
             dom.repDisplay.classList.add('hidden');
             dom.failInputZone.classList.add('hidden');
             dom.repDisplay.classList.remove('text-green-400');
 
-            switch (currentPart.type) {
+            switch (exercise.type) {
                 case 'time':
                     dom.timerDisplay.classList.remove('hidden');
-                    dom.timerDisplay.textContent = formatTime(currentPart.duration);
+                    dom.timerDisplay.textContent = formatTime(exercise.duration);
+                    dom.exerciseDetail.textContent = `${exercise.duration} segundos`;
                     dom.mainActionBtn.textContent = '¡COMENZAR!';
-                    break;
-                case 'fail-time':
-                    dom.timerDisplay.classList.remove('hidden');
-                    dom.timerDisplay.textContent = "00:00";
-                    dom.mainActionBtn.textContent = '¡COMENZAR CRONÓMETRO!';
-                    dom.exerciseDetail.textContent = plan.isCircuit ? `Al fallo` : `${exercise.sets} series al fallo`;
                     break;
                 case 'fail':
                     dom.failInputZone.classList.remove('hidden');
                     dom.failRepsInput.value = '';
-                    dom.mainActionBtn.textContent = '¡HECHO! (Iniciar Descanso)';
+                    dom.exerciseDetail.textContent = `Al fallo (AMRAP)`;
+                    dom.mainActionBtn.textContent = '¡HECHO!';
+                    break;
+                case 'distance':
+                    dom.repDisplay.classList.remove('hidden');
+                    dom.repDisplay.textContent = `${exercise.distance}m`;
+                    dom.exerciseDetail.textContent = `${exercise.distance} metros`;
+                    dom.mainActionBtn.textContent = '¡HECHO!';
                     break;
                 case 'reps':
                 default:
                     dom.repDisplay.classList.remove('hidden');
-                    dom.repDisplay.textContent = currentPart.reps;
+                    dom.repDisplay.textContent = exercise.reps;
+                    dom.exerciseDetail.textContent = `${exercise.reps} repeticiones`;
                     dom.mainActionBtn.textContent = '¡HECHO!';
-                    if(exercise.isSuperset && currentState.stageIndex < exercise.stages.length - 1) {
-                        dom.mainActionBtn.textContent = 'SIGUIENTE ETAPA';
-                    } else {
-                        dom.mainActionBtn.textContent = '¡HECHO! (Iniciar Descanso)';
-                    }
                     break;
             }
-            updateProgressBar();
-            updateExerciseList();
         }
+
         function handleMainAction() {
             vibrate();
-            dom.mainActionBtn.classList.add('pop-animation');
-            dom.mainActionBtn.addEventListener('animationend', () => dom.mainActionBtn.classList.remove('pop-animation'), { once: true });
-            const exercise = workoutPlan[currentState.day].exercises[currentState.exerciseIndex];
+            playSound('complete');
             if (dom.mainActionBtn.textContent.includes('COMENZAR')) {
                 playSound('start');
-                if(exercise.type === 'fail-time') {
-                    let seconds = 0;
-                    clearInterval(currentState.timerInterval);
-                    currentState.timerInterval = setInterval(() => {
-                        seconds++;
-                        dom.timerDisplay.textContent = formatTime(seconds);
-                    }, 1000);
-                    dom.mainActionBtn.textContent = '¡PARAR Y DESCANSAR!';
-                } else {
-                    startTimer(exercise.duration, dom.timerDisplay, () => {
-                        if (exercise.bilateral && currentState.currentSide === 'left') {
-                            currentState.currentSide = 'right';
-                            dom.mainActionBtn.disabled = false;
-                            dom.mainActionBtn.textContent = '¡COMENZAR LADO DERECHO!';
-                            loadExercise();
-                        } else {
-                            startRest();
-                        }
-                    });
-                    dom.mainActionBtn.textContent = 'EN PROGRESO...';
-                    dom.mainActionBtn.disabled = true;
-                }
+                const exercise = getCurrentExercise();
+                startTimer(exercise.duration, dom.timerDisplay, () => {
+                    dom.mainActionBtn.disabled = false;
+                    advanceToNextStep();
+                });
+                dom.mainActionBtn.disabled = true;
             } else {
-                playSound('complete');
-                dom.repDisplay.classList.add('text-green-400');
-                clearInterval(currentState.timerInterval);
-                
-                // MODIFICACIÓN: Lógica para avanzar en superseries
-                if (exercise.isSuperset && currentState.stageIndex < exercise.stages.length - 1) {
-                    currentState.stageIndex++;
-                    setTimeout(loadExercise, 400); // Pequeña pausa para ver el feedback
-                } else {
-                    if (exercise.isSuperset) {
-                        currentState.stageIndex = 0; // Resetear para la próxima serie
-                    }
-                    setTimeout(startRest, 300);
-                }
+                 advanceToNextStep();
             }
         }
-        function startRest() {
-            const plan = workoutPlan[currentState.day];
-            let currentExercise = plan.exercises[currentState.exerciseIndex];
-            let restDuration;
-            let isLastExerciseInRound = currentState.exerciseIndex === plan.exercises.length - 1;
+        
+        function getCurrentExercise() {
+            const dayPlan = getWorkoutDay();
+            if (dayPlan.isCircuit) {
+                return dayPlan.exercises[currentState.exerciseInGroupIndex];
+            }
+            const group = dayPlan.groups[currentState.groupIndex];
+            return group.type === 'single' ? group.exercise : group.exercises[currentState.exerciseInGroupIndex];
+        }
 
-            if (plan.isCircuit) {
-                restDuration = isLastExerciseInRound ? plan.restBetweenRounds : 0;
-            } else {
-                restDuration = currentExercise.rest;
-                if (currentState.set >= currentExercise.sets && currentState.exerciseIndex >= plan.exercises.length - 1) {
-                    nextSetOrExercise(); return;
+        function advanceToNextStep() {
+            const exercise = getCurrentExercise();
+            if (exercise.bilateral && currentState.currentSide === 'left') {
+                currentState.currentSide = 'right';
+                loadExercise();
+                return;
+            }
+            if (exercise.bilateral) {
+                currentState.currentSide = 'left'; 
+            }
+            const dayPlan = getWorkoutDay();
+            if (dayPlan.isCircuit) {
+                const isLastInRound = currentState.exerciseInGroupIndex >= dayPlan.exercises.length - 1;
+                if (isLastInRound) {
+                    startRest(dayPlan.restBetweenRounds, true);
+                } else {
+                    currentState.exerciseInGroupIndex++;
+                    loadExercise();
                 }
+                return;
             }
+            const group = dayPlan.groups[currentState.groupIndex];
+            const isLastInSuperset = group.type === 'superset' && currentState.exerciseInGroupIndex >= group.exercises.length - 1;
+            if (group.type === 'superset' && !isLastInSuperset) {
+                currentState.exerciseInGroupIndex++;
+                loadExercise();
+            } else {
+                startRest(group.rest, false);
+            }
+        }
 
-            if (restDuration === 0) {
-                nextSetOrExercise(); return;
+        function startRest(duration, isCircuitRest) {
+            if (duration === 0) {
+                moveToNextSetOrGroup(isCircuitRest);
+                return;
             }
-            
             dom.restModal.classList.remove('hidden');
-            dom.motivationQuote.textContent = motivationQuotes[Math.floor(Math.random() * motivationQuotes.length)];
-            
-            let nextExerciseName;
-            let nextSetOrRound;
-
-            if(plan.isCircuit) {
-                nextExerciseName = plan.exercises[0].name;
-                nextSetOrRound = `Ronda ${currentState.set + 1}`;
-            } else {
-                let nextSet = currentState.set + 1;
-                let nextExercise = plan.exercises[currentState.exerciseIndex];
-                if (nextSet > nextExercise.sets) {
-                    nextSet = 1;
-                    nextExercise = plan.exercises[currentState.exerciseIndex + 1];
-                }
-                nextExerciseName = nextExercise.name;
-                nextSetOrRound = `Serie ${nextSet}`;
-            }
-            
-            dom.nextExerciseInfo.textContent = `${nextExerciseName} (${nextSetOrRound})`;
-            startTimer(restDuration, dom.restTimer, () => {
+            dom.nextExerciseInfo.textContent = "Prepárate...";
+            startTimer(duration, dom.restTimer, () => {
                 dom.restModal.classList.add('hidden');
-                nextSetOrExercise();
+                moveToNextSetOrGroup(isCircuitRest);
             });
         }
-        function nextSetOrExercise() {
-            const plan = workoutPlan[currentState.day];
-            if (plan.isCircuit) {
-                currentState.exerciseIndex++;
-                if (currentState.exerciseIndex >= plan.exercises.length) {
-                    currentState.exerciseIndex = 0;
-                    currentState.set++;
-                }
+
+        function moveToNextSetOrGroup(isCircuitRest) {
+            if (isCircuitRest) {
+                currentState.round++;
+                currentState.exerciseInGroupIndex = 0;
             } else {
-                const currentExercise = plan.exercises[currentState.exerciseIndex];
-                if (currentExercise.bilateral) {
-                    currentState.currentSide = 'left'; // Reset for next set
-                }
-                // MODIFICACIÓN: Resetear el índice de la etapa
-                currentState.stageIndex = 0;
-                currentState.set++;
-                if (currentState.set > currentExercise.sets) {
+                const group = getWorkoutDay().groups[currentState.groupIndex];
+                if (currentState.set < group.sets) {
+                    currentState.set++;
+                    currentState.exerciseInGroupIndex = 0;
+                } else {
                     currentState.set = 1;
-                    currentState.exerciseIndex++;
+                    currentState.groupIndex++;
+                    currentState.exerciseInGroupIndex = 0;
                 }
             }
-            dom.mainActionBtn.disabled = false;
             loadExercise();
         }
+
         function showCompletionScreen() {
              currentState.isWorkoutComplete = true;
              playSound('finish');
              triggerConfetti();
-             vibrate([100, 50, 100]);
-             dom.progressBar.style.width = '100%';
-             dom.setInfo.textContent = "¡Felicidades!";
-             dom.exerciseName.textContent = "RUTINA COMPLETADA";
-             dom.exerciseDetail.textContent = `Has completado el ${currentState.day}. ¡Gran trabajo!`;
-             dom.exerciseTempo.textContent = "Recuerda descansar, nutrirte e hidratarte bien.";
-             dom.timerDisplay.classList.add('hidden');
-             dom.repDisplay.classList.add('hidden');
-             dom.failInputZone.classList.add('hidden');
-             dom.mainActionBtn.textContent = 'ENTRENAR OTRO DÍA';
              dom.skipBtn.classList.add('hidden');
+             dom.techniqueBtn.classList.add('hidden');
+             dom.workoutArea.innerHTML = `<div class="text-center flex flex-col justify-center items-center h-full fade-in"><p class="text-cyan-400 font-semibold mb-2">¡Felicidades!</p><h2 class="text-4xl font-bold">RUTINA COMPLETADA</h2><p class="text-slate-300 text-lg mt-2">Has completado el ${currentState.day} de la ${currentState.week}. ¡Gran trabajo!</p></div>`;
         }
+        
+        function showRestDayScreen() {
+            currentState.isWorkoutComplete = true;
+            dom.skipBtn.classList.add('hidden');
+            dom.techniqueBtn.classList.add('hidden');
+            dom.workoutArea.innerHTML = `<div class="text-center flex flex-col justify-center items-center h-full fade-in"><p class="text-amber-400 font-semibold mb-2">Día de Recuperación</p><h2 class="text-4xl font-bold">Descanso Activo</h2><p class="text-slate-300 text-lg mt-2">Aprovecha para hacer una caminata ligera y estiramientos.</p></div>`;
+            updateExerciseList();
+        }
+
+        function updateExerciseList() {
+            const dayPlan = getWorkoutDay();
+            dom.planDayTitle.textContent = dayPlan.title;
+            dom.exerciseList.innerHTML = '';
+            if (dayPlan.isRestDay) {
+                dom.exerciseList.innerHTML = `<li class="p-3 bg-slate-800 rounded-lg text-center text-slate-400">Recuperación y movilidad.</li>`;
+                return;
+            }
+            if (dayPlan.isCircuit) {
+                dayPlan.exercises.forEach((ex, index) => {
+                    const isCurrent = index === currentState.exerciseInGroupIndex && currentState.round <= dayPlan.rounds;
+                    const isDone = currentState.round > dayPlan.rounds;
+                    createListItem(ex.name, `${ex.reps || ex.duration + 's' || ex.distance + 'm'}`, isCurrent, isDone);
+                });
+            } else {
+                dayPlan.groups.forEach((group, gIndex) => {
+                    if (group.type === 'single') {
+                        const isCurrent = gIndex === currentState.groupIndex;
+                        const isDone = gIndex < currentState.groupIndex;
+                        createListItem(group.exercise.name, `${group.sets} x ${group.exercise.reps || group.exercise.duration + 's' || group.exercise.distance + 'm'}`, isCurrent, isDone);
+                    } else {
+                        group.exercises.forEach((ex, eIndex) => {
+                            const isCurrent = gIndex === currentState.groupIndex && eIndex === currentState.exerciseInGroupIndex;
+                            const isDone = gIndex < currentState.groupIndex;
+                            createListItem(ex.name, `${group.sets} x ${ex.reps || ex.duration + 's'}`, isCurrent, isDone, eIndex > 0);
+                        });
+                    }
+                });
+            }
+        }
+
+        function createListItem(name, detail, isCurrent, isDone, isSupersetPart = false) {
+             const li = document.createElement('li');
+             li.className = `flex items-center p-3 rounded-lg transition-all duration-300 ${isCurrent ? 'bg-slate-700 scale-105 shadow-lg' : 'bg-slate-800'} ${isDone ? 'opacity-50' : ''} ${isSupersetPart ? 'pl-10' : ''}`;
+             li.innerHTML = `<div class="flex-shrink-0 w-6 h-6 rounded-full ${isCurrent ? 'bg-cyan-400 animate-pulse' : (isDone ? 'bg-green-500' : 'bg-slate-600')} flex items-center justify-center mr-4">${isDone ? '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : ''}</div><span class="font-semibold">${name}</span><span class="ml-auto text-sm text-slate-400">${detail}</span>`;
+             dom.exerciseList.appendChild(li);
+        }
+
+        function skipExercise() {
+            vibrate(); playSound('complete');
+            const dayPlan = getWorkoutDay();
+            if (dayPlan.isCircuit) {
+                const isLastInRound = currentState.exerciseInGroupIndex >= dayPlan.exercises.length - 1;
+                if (isLastInRound) {
+                    startRest(dayPlan.restBetweenRounds, true);
+                } else {
+                    currentState.exerciseInGroupIndex++;
+                    loadExercise();
+                }
+            } else {
+                currentState.groupIndex++;
+                currentState.set = 1;
+                currentState.exerciseInGroupIndex = 0;
+                currentState.currentSide = 'left';
+                loadExercise();
+            }
+        }
+
+        function showTechniqueModal() {
+            const exercise = getCurrentExercise();
+            dom.techniqueTitle.textContent = exercise.name;
+            dom.techniqueContent.innerHTML = exercise.tips || '<p>No hay consejos de técnica disponibles para este ejercicio.</p>';
+            dom.techniqueModal.classList.remove('hidden');
+        }
+
+        function initializeApp() {
+            Object.keys(workoutData).forEach(week => {
+                const option = document.createElement('option');
+                option.value = week;
+                option.textContent = week;
+                dom.weekSelector.appendChild(option);
+            });
+            dom.startAppBtn.addEventListener('click', () => { vibrate(); if (Tone.context.state !== 'running') { Tone.start().then(setupSounds); } dom.welcomeModal.classList.add('hidden'); });
+            dom.mainActionBtn.addEventListener('click', handleMainAction);
+            dom.skipBtn.addEventListener('click', skipExercise);
+            dom.skipRestBtn.addEventListener('click', () => { vibrate(); clearInterval(currentState.timerInterval); dom.restModal.classList.add('hidden'); moveToNextSetOrGroup(getWorkoutDay().isCircuit); });
+            dom.weekSelector.addEventListener('change', (e) => { currentState.week = e.target.value; populateDaySelectors(); changeDay(Object.keys(workoutData[currentState.week])[0]); });
+            dom.techniqueBtn.addEventListener('click', showTechniqueModal);
+            dom.closeTechniqueBtn.addEventListener('click', () => dom.techniqueModal.classList.add('hidden'));
+
+            populateDaySelectors();
+            changeDay('Día 1');
+        }
+
+        function populateDaySelectors() {
+            dom.daySelectorsContainer.innerHTML = '';
+            Object.keys(workoutData[currentState.week]).forEach(day => {
+                const button = document.createElement('button');
+                button.dataset.day = day;
+                button.textContent = day.replace(' ', '\n');
+                button.className = 'day-selector flex-1 text-center py-2 px-3 rounded-md text-sm font-semibold transition-all duration-300 hover:bg-slate-700';
+                button.addEventListener('click', () => changeDay(day));
+                dom.daySelectorsContainer.appendChild(button);
+            });
+        }
+
         function changeDay(day) {
+            vibrate();
             currentState.day = day;
-            currentState.exerciseIndex = 0;
+            currentState.groupIndex = 0;
+            currentState.exerciseInGroupIndex = 0;
             currentState.set = 1;
+            currentState.round = 1;
             currentState.isWorkoutComplete = false;
-            currentState.currentSide = 'left';
-            // MODIFICACIÓN: Resetear el índice de la etapa al cambiar de día
-            currentState.stageIndex = 0;
-            clearInterval(currentState.timerInterval);
             dom.mainActionBtn.disabled = false;
             dom.skipBtn.classList.remove('hidden');
-            dom.daySelectors.forEach(btn => {
+            document.querySelectorAll('.day-selector').forEach(btn => {
                 if (btn.dataset.day === day) {
                     btn.classList.add('bg-cyan-500', 'text-slate-900');
                     btn.classList.remove('hover:bg-slate-700');
@@ -581,66 +679,6 @@
                     btn.classList.add('hover:bg-slate-700');
                 }
             });
-            loadExercise();
-        }
-        function showTechniqueModal() {
-            const exercise = workoutPlan[currentState.day].exercises[currentState.exerciseIndex];
-            dom.techniqueTitle.textContent = exercise.name;
-            dom.techniqueContent.innerHTML = exercise.tips;
-            dom.techniqueModal.classList.remove('hidden');
-        }
-
-        // --- EVENT LISTENERS E INICIALIZACIÓN ---
-        function initializeApp() {
-            dom.startAppBtn.addEventListener('click', () => {
-                vibrate();
-                if (Tone.context.state !== 'running') {
-                    Tone.start().then(setupSounds);
-                }
-                dom.welcomeModal.classList.add('hidden');
-            });
-            dom.mainActionBtn.addEventListener('click', () => {
-                if (currentState.isWorkoutComplete) {
-                    location.reload();
-                } else {
-                    handleMainAction();
-                }
-            });
-            dom.skipBtn.addEventListener('click', () => {
-                vibrate();
-                playSound('complete');
-                const plan = workoutPlan[currentState.day];
-                if (plan.isCircuit) {
-                    if (currentState.exerciseIndex === plan.exercises.length - 1) {
-                        startRest();
-                    } else {
-                        currentState.exerciseIndex++;
-                        loadExercise();
-                    }
-                } else {
-                    currentState.set = 1;
-                    currentState.stageIndex = 0; // Resetear etapa al saltar
-                    currentState.exerciseIndex++;
-                    loadExercise();
-                }
-            });
-            dom.skipRestBtn.addEventListener('click', () => {
-                vibrate();
-                playSound('start');
-                clearInterval(currentState.timerInterval);
-                dom.restModal.classList.add('hidden');
-                dom.restTimer.classList.remove('pulse-animation');
-                nextSetOrExercise();
-            });
-            dom.daySelectors.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    vibrate();
-                    changeDay(btn.dataset.day)
-                });
-            });
-            dom.techniqueBtn.addEventListener('click', showTechniqueModal);
-            dom.closeTechniqueBtn.addEventListener('click', () => dom.techniqueModal.classList.add('hidden'));
-            
             loadExercise();
         }
         
