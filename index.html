@@ -88,7 +88,7 @@
 
     </div>
 
-    <!-- Modales -->
+    <!-- Modals -->
     <div id="rest-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50">
         <div class="glassmorphism rounded-2xl p-8 text-center shadow-2xl max-w-sm w-full mx-4 fade-in">
             <p class="text-2xl font-semibold text-slate-300 mb-2">¡A DESCANSAR!</p>
@@ -127,9 +127,9 @@
         const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
         const manifestURL = URL.createObjectURL(manifestBlob);
         document.querySelector('#manifest').setAttribute('href', manifestURL);
-        if ('serviceWorker' in navigator) { const swCode = `const CACHE_NAME = 'workout-app-cache-v3'; const urlsToCache = [ '.', 'index.html' ]; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache)))); self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`; const swBlob = new Blob([swCode], { type: 'application/javascript' }); navigator.serviceWorker.register(URL.createObjectURL(swBlob)); }
+        if ('serviceWorker' in navigator) { const swCode = `const CACHE_NAME = 'workout-app-cache-v5'; const urlsToCache = [ '.', 'index.html' ]; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache)))); self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`; const swBlob = new Blob([swCode], { type: 'application/javascript' }); navigator.serviceWorker.register(URL.createObjectURL(swBlob)); }
         
-        // --- DATA DE LA RUTINA ---
+        // --- DATA DE LA RUTINA (OMITIDA POR BREVEDAD) ---
         const workoutData = {
             "Semana 1": {
                 "Día 1": { title: "Acondicionamiento General", groups: [
@@ -375,11 +375,11 @@
         function formatTime(seconds) { const mins = Math.floor(seconds / 60).toString().padStart(2, '0'); const secs = (seconds % 60).toString().padStart(2, '0'); return `${mins}:${secs}`; }
         function startTimer(duration, displayElement, onEnd) { let timeLeft = duration; displayElement.textContent = formatTime(timeLeft); clearInterval(currentState.timerInterval); currentState.timerInterval = setInterval(() => { timeLeft--; displayElement.textContent = formatTime(timeLeft); if (timeLeft <= 3 && timeLeft > 0) { playSound('countdownTick'); } if (timeLeft <= 0) { clearInterval(currentState.timerInterval); playSound('finish'); vibrate([100, 50, 100]); if (onEnd) onEnd(); } }, 1000); }
         
-        function getWorkoutDay() {
-            let week = workoutData[currentState.week];
-            let day = week[currentState.day];
+        function getWorkoutDay(weekKey, dayKey) {
+            let week = workoutData[weekKey];
+            let day = week[dayKey];
             if (day.isRepeat) {
-                const repeatWeekKey = day.repeatWeek || currentState.week;
+                const repeatWeekKey = day.repeatWeek || weekKey;
                 const repeatDayKey = day.repeatDay;
                 day = workoutData[repeatWeekKey][repeatDayKey];
             }
@@ -390,7 +390,7 @@
             dom.workoutArea.classList.remove('hidden');
             dom.skipBtn.classList.remove('hidden');
             dom.techniqueBtn.classList.remove('hidden');
-            const dayPlan = getWorkoutDay();
+            const dayPlan = getWorkoutDay(currentState.week, currentState.day);
 
             if (dayPlan.isRestDay) {
                 showRestDayScreen();
@@ -454,7 +454,7 @@
                 default:
                     dom.repDisplay.classList.remove('hidden');
                     dom.repDisplay.textContent = exercise.reps;
-                    dom.exerciseDetail.textContent = `${exercise.reps} repeticiones`;
+                    dom.exerciseDetail.textContent = `${typeof exercise.reps === 'string' ? exercise.reps : ''} repeticiones`;
                     dom.mainActionBtn.textContent = '¡HECHO!';
                     break;
             }
@@ -477,7 +477,7 @@
         }
         
         function getCurrentExercise() {
-            const dayPlan = getWorkoutDay();
+            const dayPlan = getWorkoutDay(currentState.week, currentState.day);
             if (dayPlan.isCircuit) {
                 return dayPlan.exercises[currentState.exerciseInGroupIndex];
             }
@@ -495,7 +495,7 @@
             if (exercise.bilateral) {
                 currentState.currentSide = 'left'; 
             }
-            const dayPlan = getWorkoutDay();
+            const dayPlan = getWorkoutDay(currentState.week, currentState.day);
             if (dayPlan.isCircuit) {
                 const isLastInRound = currentState.exerciseInGroupIndex >= dayPlan.exercises.length - 1;
                 if (isLastInRound) {
@@ -534,7 +534,7 @@
                 currentState.round++;
                 currentState.exerciseInGroupIndex = 0;
             } else {
-                const group = getWorkoutDay().groups[currentState.groupIndex];
+                const group = getWorkoutDay(currentState.week, currentState.day).groups[currentState.groupIndex];
                 if (currentState.set < group.sets) {
                     currentState.set++;
                     currentState.exerciseInGroupIndex = 0;
@@ -553,7 +553,13 @@
              triggerConfetti();
              dom.skipBtn.classList.add('hidden');
              dom.techniqueBtn.classList.add('hidden');
-             dom.workoutArea.innerHTML = `<div class="text-center flex flex-col justify-center items-center h-full fade-in"><p class="text-cyan-400 font-semibold mb-2">¡Felicidades!</p><h2 class="text-4xl font-bold">RUTINA COMPLETADA</h2><p class="text-slate-300 text-lg mt-2">Has completado el ${currentState.day} de la ${currentState.week}. ¡Gran trabajo!</p></div>`;
+             const calories = calculateCaloriesForDay(currentState.week, currentState.day);
+             dom.workoutArea.innerHTML = `<div class="text-center flex flex-col justify-center items-center h-full fade-in">
+                <p class="text-cyan-400 font-semibold mb-2">¡Felicidades!</p>
+                <h2 class="text-4xl font-bold">RUTINA COMPLETADA</h2>
+                <p class="text-slate-300 text-lg mt-2">Has completado el ${currentState.day} de la ${currentState.week}. ¡Gran trabajo!</p>
+                <p class="text-amber-400 text-2xl font-bold mt-6">🔥 Calorías Estimadas: ${calories} kcal</p>
+             </div>`;
         }
         
         function showRestDayScreen() {
@@ -565,7 +571,7 @@
         }
 
         function updateExerciseList() {
-            const dayPlan = getWorkoutDay();
+            const dayPlan = getWorkoutDay(currentState.week, currentState.day);
             dom.planDayTitle.textContent = dayPlan.title;
             dom.exerciseList.innerHTML = '';
             if (dayPlan.isRestDay) {
@@ -604,7 +610,7 @@
 
         function skipExercise() {
             vibrate(); playSound('complete');
-            const dayPlan = getWorkoutDay();
+            const dayPlan = getWorkoutDay(currentState.week, currentState.day);
             if (dayPlan.isCircuit) {
                 const isLastInRound = currentState.exerciseInGroupIndex >= dayPlan.exercises.length - 1;
                 if (isLastInRound) {
@@ -629,6 +635,78 @@
             dom.techniqueModal.classList.remove('hidden');
         }
 
+        // --- LÓGICA DE CÁLCULO DE CALORÍAS (MEJORADA) ---
+        function calculateCaloriesForDay(weekKey, dayKey) {
+            const USER_WEIGHT_KG = 73;
+            // --- VALORES MET ---
+            const MET_STRENGTH = 6.0;         // Para semanas 1-4
+            const MET_STRENGTH_INTENSE = 7.5; // Para semanas 5-8 (más realista para alta intensidad)
+            const MET_CIRCUIT = 8.0;          // Para entrenamiento en circuito
+            
+            // --- ESTIMACIONES DE TIEMPO ---
+            const SECS_PER_REP = 3;
+            const SECS_FOR_AMRAP = 45;
+            const METERS_PER_SEC_CARRY = 1.2;
+
+            const dayPlan = getWorkoutDay(weekKey, dayKey);
+            
+            if (dayPlan.isRestDay) return 0;
+
+            let totalActiveSeconds = 0;
+            let totalRestSeconds = 0;
+
+            const estimateExerciseTime = (ex) => {
+                let time = 0;
+                let reps = 0;
+                switch(ex.type) {
+                    case 'time': time = ex.duration; break;
+                    case 'fail': time = SECS_FOR_AMRAP; break;
+                    case 'distance': time = ex.distance / METERS_PER_SEC_CARRY; break;
+                    case 'reps':
+                        if (typeof ex.reps === 'string') {
+                            reps = parseInt(ex.reps.split('-')[0]);
+                        } else {
+                            reps = ex.reps;
+                        }
+                        time = reps * SECS_PER_REP;
+                        break;
+                }
+                return ex.bilateral ? time * 2 : time;
+            };
+
+            if (dayPlan.isCircuit) {
+                const activeTimePerRound = dayPlan.exercises.reduce((sum, ex) => sum + estimateExerciseTime(ex), 0);
+                totalActiveSeconds = activeTimePerRound * dayPlan.rounds;
+                totalRestSeconds = dayPlan.restBetweenRounds * (dayPlan.rounds - 1);
+            } else {
+                dayPlan.groups.forEach(group => {
+                    let activeTimePerSet = 0;
+                    if (group.type === 'single') {
+                        activeTimePerSet = estimateExerciseTime(group.exercise);
+                    } else { // superset
+                        activeTimePerSet = group.exercises.reduce((sum, ex) => sum + estimateExerciseTime(ex), 0);
+                    }
+                    totalActiveSeconds += activeTimePerSet * group.sets;
+                    totalRestSeconds += group.rest * group.sets;
+                });
+            }
+
+            const totalMinutes = (totalActiveSeconds + totalRestSeconds) / 60;
+            const weekNum = parseInt(weekKey.split(' ')[1]);
+
+            // --- Lógica MET mejorada ---
+            const dayMET = dayPlan.isCircuit 
+                ? MET_CIRCUIT 
+                : (weekNum >= 5 ? MET_STRENGTH_INTENSE : MET_STRENGTH);
+            
+            // Fórmula MET: (MET * peso en kg * 3.5) / 200 = Kcal/min
+            const caloriesPerMinute = (dayMET * USER_WEIGHT_KG * 3.5) / 200;
+            const totalCalories = caloriesPerMinute * totalMinutes;
+
+            return Math.round(totalCalories);
+        }
+
+        // --- INICIALIZACIÓN Y EVENTOS ---
         function initializeApp() {
             Object.keys(workoutData).forEach(week => {
                 const option = document.createElement('option');
@@ -639,7 +717,7 @@
             dom.startAppBtn.addEventListener('click', () => { vibrate(); if (Tone.context.state !== 'running') { Tone.start().then(setupSounds); } dom.welcomeModal.classList.add('hidden'); });
             dom.mainActionBtn.addEventListener('click', handleMainAction);
             dom.skipBtn.addEventListener('click', skipExercise);
-            dom.skipRestBtn.addEventListener('click', () => { vibrate(); clearInterval(currentState.timerInterval); dom.restModal.classList.add('hidden'); moveToNextSetOrGroup(getWorkoutDay().isCircuit); });
+            dom.skipRestBtn.addEventListener('click', () => { vibrate(); clearInterval(currentState.timerInterval); dom.restModal.classList.add('hidden'); moveToNextSetOrGroup(getWorkoutDay(currentState.week, currentState.day).isCircuit); });
             dom.weekSelector.addEventListener('change', (e) => { currentState.week = e.target.value; populateDaySelectors(); changeDay(Object.keys(workoutData[currentState.week])[0]); });
             dom.techniqueBtn.addEventListener('click', showTechniqueModal);
             dom.closeTechniqueBtn.addEventListener('click', () => dom.techniqueModal.classList.add('hidden'));
